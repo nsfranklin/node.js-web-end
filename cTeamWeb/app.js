@@ -44,7 +44,6 @@ db.query('SELECT * FROM cTeamTeamProjectDatabase.Users', function (err, result) 
 
     });
 */
-
 /*
 
 var resultDB; 
