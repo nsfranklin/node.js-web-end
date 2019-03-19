@@ -1,37 +1,18 @@
-<title>Login Register</title>
- <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
- <link rel="stylesheet" 
- href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
- <style>
-  html{
-  }
- </style>
-</head>
-<body>
- <div class="container">
-  <div class="col-sm-6 col-sm-offset-3">
-   <h2>Login</h2>
+ <form action="/users/login" method="post">
+    <div class="box">
+  <h1>CTeam</h1>
+  <h3>Sign in...</h3>
+  <form>
+    <div class="inputBox">
+      <input type="text" class="form-control" name="username">
+      <label>Username</label>
 
-  
-
-   <form action="/users/login" method="post">
-    <div class="form-group">
-     <label>Username</label>
-     <input type="text" class="form-control" name="username">
+     <div class="inputBox">
+      <input type="text" class="form-control" name="password">
+      <label>Password</label>
     </div>
-    <div class="form-group">
-     <label>Password</label>
-     <input type="text" class="form-control" name="password">
-    </div>
-
     <button type="submit" class="btn btn-succcess btn-lg">Login</button>
-   </form>
-
-   <hr>
-
-   <p>Need an account <a href="/users/register">Register</a></p>
-   <p>Go Back <a href="/">Home</a>.</p>
-  </div>
- </div>
-</body>
-</html>
+  </form>
+</div>
+</div>
+</form>

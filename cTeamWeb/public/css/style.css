@@ -59,6 +59,7 @@ h5{
   font-size: 25px; 
 }
  
+ 
 
 /*-----------------------------------------containers-----------------------------------------------*/
 .container{
@@ -131,7 +132,7 @@ h5{
 
 .section{
   text-align: center;
-  padding: 50px 80px;
+  padding: 50px 0px;
   background: transparent;
 }
 
@@ -227,12 +228,12 @@ h5{
   color: white!important;
 }
 .box{
-  position: absolute;
-  top: 350px;
-  left: 750px;
+
+  margin-top: 20%;
+  margin-left: 50%;
   transform: translate(-50%,-50%);
   width: 400px;
-  padding: 40px;
+  padding: 60px;
   background: rgba(0,0,0,.8) !important;
   box-sizing: border-box;
   box-shadow: 0 5px 25px rgba(0,0,0,.5);
@@ -267,6 +268,8 @@ input[type=text]:focus{
   color: #d0ba7a !important;
   padding: 15px;
 }
+
+
 .box2{
   width: 800px;
   height: 500px;

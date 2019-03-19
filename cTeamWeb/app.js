@@ -112,6 +112,7 @@ app.use(session({
 // Passport init
 app.use(passport.initialize());
 app.use(passport.session());
+require('./node_modules/passport');
 
 // Express Validator middleware options from https://github.com/express-validator/express-validator
 app.use(expressValidator({  
