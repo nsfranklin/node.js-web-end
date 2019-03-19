@@ -1,4 +1,4 @@
-<h2 class="page-header">Register</h2>
+<h2 class="box">Register</h2>
 {{#if user}}
         <div class="alert alert-danger">Username has taken already try new</div> 
 {{/if}}
@@ -10,7 +10,7 @@
         <div class="alert alert-danger">{{msg}}</div>
       {{/each}}
 {{/if}}
-<form method="post" action="/users/register">
+<form class="box" method="post" action="/users/register">
    <div class="form-group">
     <label>Surname</label>
     <input type="text" class="form-control" placeholder="Surname" name="surname">
