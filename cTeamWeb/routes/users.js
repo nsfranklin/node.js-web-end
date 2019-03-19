@@ -14,9 +14,11 @@ var db = mysql.createConnection({
   password : '54Tjltl9LgSWHxrx2AVo',
  // database : 'cTeamTeamProjectDatabase'
    ssl  : {
-    ca : fs.readFileSync(__dirname + '/../ca/rds-combined-ca-bundle.pem' )
+    ca : fs.readFileSync(__dirname + '/../SSL-Certificate/rds-combined-ca-bundle.pem' )
   }
 });
+
+
 
 
 db.connect(function(err) {
@@ -28,6 +30,8 @@ db.connect(function(err) {
   }
   
 });
+
+
 
 //Settings
 router.get('/settings', function(req, res){ 
@@ -50,7 +54,7 @@ router.get('/login', function(req, res){
 	res.render('login'); 
 });
 
-router.post('/login', passport.authenticate('local', {
+router.post('/login', passport.authenticate('local-login', {
   successRedirect: '/',
   failureRedirect: '/login',
   failureFlash: true
@@ -128,21 +132,21 @@ module.exports = function(passport) {
  );
 
  passport.use(
-  'local',
+  'local-login',
   new LocalStrategy({
    usernameField : 'UserName',
    passwordField: 'PassHash',
    passReqToCallback: true
   },
   function(req, username, password, done){
-   connection.query("SELECT * FROM cTeamTeamProjectDatabase.Users WHERE UserName = ? ", [username],
+   connection.query("SELECT PassHash FROM cTeamTeamProjectDatabase.Users WHERE UserName = ? ", [username],
    function(err, rows){
     if(err)
      return done(err);
     if(!rows.length){
      return done(null, false, req.flash('loginMessage', 'No User Found'));
     }
-    if(!bcrypt.compareSync(password, rows[0].password))
+    if(!bcrypt.compareSync(password, hash))
      return done(null, false, req.flash('loginMessage', 'Wrong Password'));
 
     return done(null, rows[0]);

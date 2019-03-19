@@ -23,6 +23,6 @@
     "mysql": "*",
     "passport": "*",
     "passport-http": "*",
-    "passport-local": "*"
+    "passport-local": "^1.0.0"
   }
 }
