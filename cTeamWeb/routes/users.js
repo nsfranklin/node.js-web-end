@@ -12,24 +12,12 @@ var db = mysql.createConnection({
   host     : 'cteamteamprojectdatabase.csed5aholavi.eu-west-2.rds.amazonaws.com',
   user     : 'nodeserver',
   password : '54Tjltl9LgSWHxrx2AVo',
- // database : 'cTeamTeamProjectDatabase'
-   ssl  : {
-    ca : fs.readFileSync(__dirname + '/../SSL-Certificate/rds-combined-ca-bundle.pem' )
-  }
+  database : 'cTeamTeamProjectDatabase',
+  ssl  : 'Amazon RDS'
 });
 
 
 
-
-db.connect(function(err) {
-  if (err) {
-    console.log('Mysql Connection error:', err);
-  }
-  else{
-  	console.log('Mysql Connected');
-  }
-  
-});
 
 
 
@@ -73,6 +61,21 @@ router.post('/register', passport.authenticate('reg', {
 	failureRedirect:'/register',
 	failureFlash: true
 }));
+
+router.post('/cameraSetting', function(req, res){
+	db.connect(function(err) {
+	  if (err) {
+		console.log('Mysql Connection error:', err);
+	  }
+	  else{
+		console.log('Mysql Connected');
+	  }
+	  
+	});
+	var sql = "INSERT INTO CameraDetails(CameraID) VALUES (3)"; 
+	db.query(sql)
+	res.render("settings");
+});
 
 /****************************************************************************************/
 
