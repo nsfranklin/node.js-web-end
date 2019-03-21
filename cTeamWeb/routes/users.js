@@ -8,13 +8,19 @@ var bcrypt = require('bcryptjs');
 var app = express();
 
 //Connect to Mysql db
-var db = mysql.createConnection({
-  host     : 'cteamteamprojectdatabase.csed5aholavi.eu-west-2.rds.amazonaws.com',
-  user     : 'nodeserver',
-  password : '54Tjltl9LgSWHxrx2AVo',
-  database : 'cTeamTeamProjectDatabase',
-  ssl  : 'Amazon RDS'
-});
+var db;
+
+function createMySQLConnection(){
+	  db = mysql.createConnection({
+	  host     : 'cteamteamprojectdatabase.csed5aholavi.eu-west-2.rds.amazonaws.com',
+	  user     : 'nodeserver',
+	  password : '54Tjltl9LgSWHxrx2AVo',
+	  database : 'cTeamTeamProjectDatabase',
+	  ssl  : 'Amazon RDS'
+	  });
+	  
+	  return db;
+}
 
 
 
@@ -63,6 +69,7 @@ router.post('/register', passport.authenticate('reg', {
 }));
 
 router.post('/cameraSetting', function(req, res){
+	db = createMySQLConnection();
 	db.connect(function(err) {
 	  if (err) {
 		console.log('Mysql Connection error:', err);
@@ -73,19 +80,24 @@ router.post('/cameraSetting', function(req, res){
 	  
 	});
 	app.use(express.urlencoded());
-	var selectSQL = "SELECT CameraID FROM CameraDetails WHERE UserID =" + mysql.escape("12"); //User 2 is the test user.
+	var selectSQL = "SELECT CameraID FROM CameraDetails WHERE UserID =" + mysql.escape("2"); //User 2 is the test user.
 	var cameraID;
 	db.query(selectSQL , function(error,results,fields){	
-		if(results[0]){
+		if(typeof results[0] !== 'undefined'){
+			console.log(result[0] + " is defined!");
 			cameraID = results[0];
-			var sensorSize = req.body.sensorSize
+			var sensorSize = req.body.sensorWidth
+			console.log("Sensor Size Enter: " + sensorSize);
 			var focusLength = req.body.focusLength
-			var sql = "UPDATE CameraDetails SET sensorWidth="+ mysql.escape(sensorWidth) + " , focusLength=" + mysql.escape(focusLength);
+			console.log("Focus Length Enter: " + focusLength);
+			var sql = "UPDATE CameraDetails SET sensorWidth="+ mysql.escape(sensorSize) +" , focusLength=" + mysql.escape(focusLength) + " WHERE UserID=" + mysql.escape("2");
 		}else{
-			console.log(cameraID);
-			var sensorSize = req.body.sensorSize
+			console.log(cameraID + " is undefined. WOW");
+			var sensorSize = req.body.sensorWidth
+			console.log("Sensor Size Enter: " + sensorSize);
 			var focusLength = req.body.focusLength
-			var sql = "INSERT INTO CameraDetails(CameraID, SensorSize, FocusLength, UserID,) VALUES("; 
+			console.log("Focus Length Enter: " + focusLength);
+			var sql = "INSERT INTO CameraDetails(SensorSize, FocusLength, UserID,) VALUES("; 
 		}
 	})
 	
