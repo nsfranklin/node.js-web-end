@@ -124,6 +124,10 @@ router.post('/cameraSetting', function(req, res){
 	})
 });
 
+router.post('/addressSetting', function(req, res){
+	
+	
+});
 /****************************************************************************************/
 
 module.exports = function(passport) {
