@@ -73,13 +73,28 @@ router.post('/cameraSetting', function(req, res){
 	  
 	});
 	app.use(express.urlencoded());
-	var sensorSize = req.body.sensorSize
-	var focusLength = req.body.focusLength
-	var sql = "INSERT INTO CameraDetails(CameraID) VALUES (3)"; 
-	db.query(sql)
+	var selectSQL = "SELECT CameraID FROM CameraDetails WHERE UserID =" + mysql.escape("12"); //User 2 is the test user.
+	var cameraID;
+	db.query(selectSQL , function(error,results,fields){	
+		if(results[0]){
+			cameraID = results[0];
+			var sensorSize = req.body.sensorSize
+			var focusLength = req.body.focusLength
+			var sql = "UPDATE CameraDetails SET sensorWidth="+ mysql.escape(sensorWidth) + " , focusLength=" + mysql.escape(focusLength);
+		}else{
+			console.log(cameraID);
+			var sensorSize = req.body.sensorSize
+			var focusLength = req.body.focusLength
+			var sql = "INSERT INTO CameraDetails(CameraID, SensorSize, FocusLength, UserID,) VALUES("; 
+		}
+	})
+	
+	//db.query(sql)
+	
 	
 	
 	res.render("settings");
+	db.end();
 });
 
 /****************************************************************************************/
