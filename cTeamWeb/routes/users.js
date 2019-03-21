@@ -5,7 +5,7 @@ var passport = require('passport');
 var mysql = require('mysql');
 var fs = require('fs');
 var bcrypt = require('bcryptjs');
-
+var app = express();
 
 //Connect to Mysql db
 var db = mysql.createConnection({
@@ -72,8 +72,13 @@ router.post('/cameraSetting', function(req, res){
 	  }
 	  
 	});
+	app.use(express.urlencoded());
+	var sensorSize = req.body.sensorSize
+	var focusLength = req.body.focusLength
 	var sql = "INSERT INTO CameraDetails(CameraID) VALUES (3)"; 
 	db.query(sql)
+	
+	
 	res.render("settings");
 });
 
