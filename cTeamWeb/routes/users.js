@@ -109,13 +109,16 @@ router.post('/cameraSetting', function(req, res){
 			console.log(sql);
 			db.query(sql)
 		}
+		res.render("settings");
+		console.log("Bloody Async")
+		db.end();
 	})
 	
 	
 	
 	
-	res.render("settings");
-	db.end();
+
+
 });
 
 /****************************************************************************************/
