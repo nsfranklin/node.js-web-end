@@ -80,28 +80,38 @@ router.post('/cameraSetting', function(req, res){
 	  
 	});
 	app.use(express.urlencoded());
-	var selectSQL = "SELECT CameraID FROM CameraDetails WHERE UserID =" + mysql.escape("2"); //User 2 is the test user.
+	var selectSQL = "SELECT CameraID FROM CameraDetails WHERE UserID =" + mysql.escape(2); //User 2 is the test user.
 	var cameraID;
 	db.query(selectSQL , function(error,results,fields){	
 		if(typeof results[0] !== 'undefined'){
-			console.log(result[0] + " is defined!");
+			console.log(results[0] + " is defined!");
 			cameraID = results[0];
-			var sensorSize = req.body.sensorWidth
+			var sensorSize = parseFloat(req.body.sensorWidth)
 			console.log("Sensor Size Enter: " + sensorSize);
-			var focusLength = req.body.focusLength
-			console.log("Focus Length Enter: " + focusLength);
-			var sql = "UPDATE CameraDetails SET sensorWidth="+ mysql.escape(sensorSize) +" , focusLength=" + mysql.escape(focusLength) + " WHERE UserID=" + mysql.escape("2");
-		}else{
-			console.log(cameraID + " is undefined. WOW");
-			var sensorSize = req.body.sensorWidth
-			console.log("Sensor Size Enter: " + sensorSize);
-			if(typeof sensorSize !== Number){
+			if(isNaN(sensorSize)){
 				sensorSize = null;
 			}
 			console.log("SensorSize int?: " + sensorSize);
-			var focusLength = req.body.focusLength
+			var focusLength = parseFloat(req.body.focusLength)
 			console.log("Focus Length Enter: " + focusLength);
-			if(typeof focusLength !== Number){
+			if(isNaN(focusLength)){
+				focusLength = null;
+			}
+			console.log("FocusLength int?: " + focusLength);
+			var sql = "UPDATE CameraDetails SET SensorSize="+ mysql.escape(sensorSize) +" , FocusLength=" + mysql.escape(focusLength) + " WHERE UserID=" + mysql.escape("2");
+			console.log(sql);
+			db.query(sql);
+		}else{
+			console.log(cameraID + " is undefined. WOW");
+			var sensorSize = parseFloat(req.body.sensorWidth)
+			console.log("Sensor Size Enter: " + sensorSize);
+			if(sensorSize === NaN){
+				sensorSize = null;
+			}
+			console.log("SensorSize int?: " + sensorSize);
+			var focusLength = parseFloat(req.body.focusLength)
+			console.log("Focus Length Enter: " + focusLength);
+			if(focusLength === NaN){
 				focusLength = null;
 			}
 			console.log("FocusLength int?: " + focusLength);
@@ -110,15 +120,8 @@ router.post('/cameraSetting', function(req, res){
 			db.query(sql)
 		}
 		res.render("settings");
-		console.log("Bloody Async")
 		db.end();
 	})
-	
-	
-	
-	
-
-
 });
 
 /****************************************************************************************/
