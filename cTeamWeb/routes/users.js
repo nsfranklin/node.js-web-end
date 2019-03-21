@@ -95,13 +95,22 @@ router.post('/cameraSetting', function(req, res){
 			console.log(cameraID + " is undefined. WOW");
 			var sensorSize = req.body.sensorWidth
 			console.log("Sensor Size Enter: " + sensorSize);
+			if(typeof sensorSize !== Number){
+				sensorSize = null;
+			}
+			console.log("SensorSize int?: " + sensorSize);
 			var focusLength = req.body.focusLength
 			console.log("Focus Length Enter: " + focusLength);
-			var sql = "INSERT INTO CameraDetails(SensorSize, FocusLength, UserID,) VALUES("; 
+			if(typeof focusLength !== Number){
+				focusLength = null;
+			}
+			console.log("FocusLength int?: " + focusLength);
+			var sql = "INSERT INTO CameraDetails(SensorSize, FocusLength, UserID) VALUES(" + mysql.escape(sensorSize) + "," + mysql.escape(focusLength) + "," + mysql.escape(2) + ")"; 
+			console.log(sql);
+			db.query(sql)
 		}
 	})
 	
-	//db.query(sql)
 	
 	
 	
