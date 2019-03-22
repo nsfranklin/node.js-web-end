@@ -29,6 +29,10 @@ function createMySQLConnection(){
 
 //Settings
 router.get('/settings', function(req, res){ 
+	resWithSettingDetails(res);
+});
+
+function resWithSettingDetails(res){
 	db = createMySQLConnection();
 	db.connect(function(err) {
 	  if (err) {
@@ -40,13 +44,13 @@ router.get('/settings', function(req, res){
 	});
 	var sql = "SELECT Email FROM Users WHERE UserID =" + mysql.escape(2);
 	db.query(sql, function(err, results, fields){
-		var email = results[0];
+		var results = results[0];
 		console.log(results[0]);
 		res.render('settings', {
-			email: email.Email
+			email: results.Email
 		})
 	})
-});
+}	
 //Basket
 router.get('/basket', function(req, res){ 
 	res.render('basket'); 
@@ -107,11 +111,11 @@ router.post('/email', function(req, res){
 	if(usableEmail){
 		var SQL = "UPDATE Users Set Email="+ mysql.escape(email) + " WHERE UserID =" + mysql.escape(2); //User 2 is the test user.
 		db.query(SQL , function(error,results,fields){	
-			res.render("settings");
+			resWithSettingDetails(res);
 			db.end();
 		})
 	}else{
-		res.render("settings");
+		resWithSettingDetails(res);
 	}
 });
 
@@ -130,7 +134,7 @@ router.post('/password', function(req, res){
 	var selectSQL = "SELECT CameraID FROM CameraDetails WHERE UserID =" + mysql.escape(2); //User 2 is the test user.
 	var cameraID;
 	db.query(selectSQL , function(error,results,fields){	
-		res.render("settings");
+		resWithSettingDetails(res);
 		db.end();
 	})
 });
@@ -186,7 +190,7 @@ router.post('/cameraSetting', function(req, res){
 			console.log(sql);
 			db.query(sql)
 		}
-		res.render("settings");
+		resWithSettingDetails(res);
 		db.end();
 	})
 });
@@ -207,7 +211,7 @@ router.post('/billing', function(req, res){
 	var cameraID;
 	db.query(selectSQL , function(error,results,fields){	
 
-		res.render("settings");
+		resWithSettingDetails(res);
 		db.end();
 	})
 });
@@ -228,7 +232,7 @@ router.post('/delivery', function(req, res){
 	var cameraID;
 	db.query(selectSQL , function(error,results,fields){	
 
-		res.render("settings");
+		resWithSettingDetails(res);
 		db.end();
 	})
 });
