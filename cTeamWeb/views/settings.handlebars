@@ -1,13 +1,13 @@
 <div class="box1">
 	<h3>User Settings</h3>
 	<form action="/users/email" method="post" class="form-horizontal" id="billingform" accept-charset="utf-8">
-		<label for="email" class="control-label">Email Address</label>
+		<label for="email" >Email Address</label>
 		<input name="email" placeholder="email@placeholder.co.uk" type="text" id="email" value={{{'email'}}}>
 		<input type="submit" value="Save User Settings">
 	</form>
 	</br></br>
 	<form action="/users/password" method="post" class="form-horizontal" id="billingform" accept-charset="utf-8">
-		<label for="email" class="control-label">Password</label>
+		<label for="email" >Password</label>
 		<input name="address" placeholder="Current Password" type="text" value="" id="address">
 		<input name="address" placeholder="New Password" type="text" value="" id="address">
 		<input name="address" placeholder="New Password Again" type="text" value="" id="address">
@@ -37,15 +37,20 @@
 <div class="box1">
 	<h3>Billing Address</h3>
 	<form action="/users/billing" method="post" class="form-horizontal" id="billingform" accept-charset="utf-8">
-		<label for="address" class="control-label">Street Address</label>
-		<span class="help-inline">  Street Name and/or apartment number</span>
-		<input name="address" placeholder="W 123 Street" type="text" id="address" value={{{'baddress'}}} >
-		<label for="zip" class="control-label">Post/Zip Code</label>
-		<input name="zip" type="text" value={{{'bpostcode'}}} id="zip">
-		<label for="city" class="control-label">City</label>
+		<label for="BFirstName" >First Name</labe>
+		<input name="BFirstName" type="text" id="BFirstName" value={{{'BFirstName'}}}> 
+		<label for="BSurname" >Surname</labe>
+		<input name="BSurname" type="text" id="BSurname" value={{{'BSurname'}}}>
+		<label for="baddressnumber" >Address Lines</label>
+		<input number="baddressnumber" placeholder="" type="text" id="baddressnumber" value={{{'baddressnumber'}}}>
+		<input name="baddressname" placeholder="" type="text" id="baddressname" value={{{'baddressname'}}}>
+		<label for="zip" >Post/Zip Code</label>
+		<input name="zip" type="text" id="zip" value={{{'bpostcode'}}}>
+		<label for="city" >City</label>
 		<input name=city" type="text" id="city" value={{{'bcity'}}}>
-		<label for="country" class="control-label">Country</label></br>
+		<label for="country" >Country</label></br>
 		<select name="country" id="country">
+			<option value={{{bccode}}}>{{{bcountry}}}</option>
 			<option value="AF">Afghanistan</option>
 			<option value="AX">Åland Islands</option>
 			<option value="AL">Albania</option>
@@ -301,16 +306,20 @@
 <div class="box1">
 	<h3>Delivery Address</h3>
 	<form action="/users/delivery" method="post" class="form-horizontal" id="billingform" accept-charset="utf-8">
-		<label for="address" class="control-label">Street Address</label>
-		<span class="help-inline">  Street Name and/or apartment number</span>
-		<input name="address" placeholder="W 123 Street" type="text" id="address" value={{{daddress}}}>
-		<label for="zip" class="control-label">Post/Zip Code</label>
+		<label for="DFirstName">First Name</labe>
+		<input name="DFirstName" type="text" id="DFirstName" value={{{'DFirstName'}}}> 
+		<label for="DSurname">Surname</labe>
+		<input name="DSurname" type="text" id="DSurname" value={{{'DSurname'}}}>
+		<label for="daddressnumber" >Address Lines</label>
+		<input number="daddressnumber" placeholder="" type="text" id="daddressnumber" value={{{'daddressnumber'}}}>
+		<input name="daddressname" placeholder="" type="text" id="daddressname" value={{{'daddressname'}}}>
+		<label for="zip">Post/Zip Code</label>
 		<input name="zip" type="text" id="zip" value={{{dpostcode}}}>
-		<label for="city" class="control-label">City</label>
+		<label for="city">City</label>
 		<input name=city" type="text" id="city" value={{{'dcity'}}}>
-		<label for="country" class="control-label">Country</label></br>
+		<label for="country">Country</label></br>
 		<select name="country" id="country">
-			<option value=""></option>
+			<option value={{{dccode}}}>{{{dcountry}}}</option>
 			<option value="AF">Afghanistan</option>
 			<option value="AX">Åland Islands</option>
 			<option value="AL">Albania</option>
