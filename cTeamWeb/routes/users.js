@@ -53,6 +53,7 @@ router.post('/login', passport.authenticate('local-login', {
   failureRedirect: '/login',
   failureFlash: true
  }),
+ 
 function(req, res){
    if(req.body.remember){
     req.session.cookie.maxAge = 1000 * 60 * 3;
@@ -67,6 +68,57 @@ router.post('/register', passport.authenticate('reg', {
 	failureRedirect:'/register',
 	failureFlash: true
 }));
+
+router.post('/email', function(req, res){
+	db = createMySQLConnection();
+	db.connect(function(err) {
+	  if (err) {
+		console.log('Mysql Connection error:', err);
+	  }
+	  else{
+		console.log('Mysql Connected');
+	  }
+	  
+	});
+	app.use(express.urlencoded());
+	const regex = /\S+@\S+/
+	var usableEmail = false;
+	var email = req.body.email;
+	console.log(email);
+	if(email !== undefined){
+		usableEmail = regex.test(String(email).toLowerCase())
+		console.log("Valid Email Result: " + usableEmail);
+	}
+	if(usableEmail){
+		var SQL = "UPDATE Users Set Email="+ mysql.escape(email) + " WHERE UserID =" + mysql.escape(2); //User 2 is the test user.
+		db.query(SQL , function(error,results,fields){	
+			res.render("settings");
+			db.end();
+		})
+	}else{
+		res.render("settings");
+	}
+});
+
+router.post('/password', function(req, res){
+	db = createMySQLConnection();
+	db.connect(function(err) {
+	  if (err) {
+		console.log('Mysql Connection error:', err);
+	  }
+	  else{
+		console.log('Mysql Connected');
+	  }
+	  
+	});
+	app.use(express.urlencoded());
+	var selectSQL = "SELECT CameraID FROM CameraDetails WHERE UserID =" + mysql.escape(2); //User 2 is the test user.
+	var cameraID;
+	db.query(selectSQL , function(error,results,fields){	
+		res.render("settings");
+		db.end();
+	})
+});
 
 router.post('/cameraSetting', function(req, res){
 	db = createMySQLConnection();
@@ -124,10 +176,48 @@ router.post('/cameraSetting', function(req, res){
 	})
 });
 
-router.post('/addressSetting', function(req, res){
-	
-	
+router.post('/billing', function(req, res){
+	db = createMySQLConnection();
+	db.connect(function(err) {
+	  if (err) {
+		console.log('Mysql Connection error:', err);
+	  }
+	  else{
+		console.log('Mysql Connected');
+	  }
+	  
+	});
+	app.use(express.urlencoded());
+	var selectSQL = "SELECT CameraID FROM CameraDetails WHERE UserID =" + mysql.escape(2); //User 2 is the test user.
+	var cameraID;
+	db.query(selectSQL , function(error,results,fields){	
+
+		res.render("settings");
+		db.end();
+	})
 });
+
+router.post('/delivery', function(req, res){
+	db = createMySQLConnection();
+	db.connect(function(err) {
+	  if (err) {
+		console.log('Mysql Connection error:', err);
+	  }
+	  else{
+		console.log('Mysql Connected');
+	  }
+	  
+	});
+	app.use(express.urlencoded());
+	var selectSQL = "SELECT CameraID FROM CameraDetails WHERE UserID =" + mysql.escape(2); //User 2 is the test user.
+	var cameraID;
+	db.query(selectSQL , function(error,results,fields){	
+
+		res.render("settings");
+		db.end();
+	})
+});
+
 /****************************************************************************************/
 
 module.exports = function(passport) {

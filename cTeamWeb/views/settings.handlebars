@@ -1,3 +1,20 @@
+<div class="box1">
+	<h3>User Settings</h3>
+	<form action="/users/email" method="post" class="form-horizontal" id="billingform" accept-charset="utf-8">
+		<label for="email" class="control-label">Email Address</label>
+		<input name="email" placeholder="email@placeholder.co.uk" type="text" value="" id="email">
+		<input type="submit" value="Save User Settings">
+	</form>
+	</br></br>
+	<form action="/users/password" method="post" class="form-horizontal" id="billingform" accept-charset="utf-8">
+		<label for="email" class="control-label">Password</label>
+		<input name="address" placeholder="Current Password" type="text" value="" id="address">
+		<input name="address" placeholder="New Password" type="text" value="" id="address">
+		<input name="address" placeholder="New Password Again" type="text" value="" id="address">
+		<input type="submit" value="Save New Password">
+	</form>
+</div>
+
 <div class="box1";>
 	<h3> Camera Settings</h3>
 	<p> Which cameras have been used?</p>
@@ -16,54 +33,45 @@
 		<input type="submit" value="Save Camera 2">
 	</form>
 </div>
-<div class="box2">
-<h5>Billing Address</h5>
-<div class="row">
-        <div class="span8">
-    		<form action="/billing" method="post" class="form-horizontal" id="billingform" accept-charset="utf-8">
-    			<div class="control-group">
-    				<label for="email" class="control-label">Billing E-Mail</label>
-    				<div class="controls">
-    					<input name="email" type="email" value="" id="email">
-    					<span class="help-inline">  Where should we send invoices?</span>
-    				</div>
-    			</div>
-     
-    			<div class="control-group">
-    				<label for="address" class="control-label">Street Address</label>
-    				<div class="controls"><input name="address" placeholder="W 123 Street" type="text" value="" id="address"><span class="help-inline">  Street Name and/or apartment number</span>
-    				</div>
-    			</div>
-    			<div class="control-group">
-    				<label for="zip" class="control-label">Zip Code</label>
-    				<div class="controls">
-						<input name="zip" type="text" value="" id="zip">
-    				</div>
-    			</div>
-    				<div class="control-group">
-    				<label for="city" class="control-label">City</label>
-    				<div class="controls"><input name="city" type="text" value="" id="city">
-    				</div>
-    			</div>
-    			<div class="control-group">
-    				<label for="country" class="control-label">Country</label>
-    				<div class="controls">
-    					<select name="country" id="country">
-    						<option value=""></option>
-    						<option value="GB">United Kingdom</option>
-    						<option value="IR"> Ireland</option>
-    						<option value="US">USA</option>
-    					</select>
-    				</div>
-    			</div>
-     
-    			<div class="form-actions">
-    				<button type="submit" class="btn btn-large btn-primary">Save Billing Address</button>
-    			</div>
-    		</form>
-    	</div> <!-- .span8 -->
-	</div>
+
+<div class="box1">
+	<h3>Billing Address</h3>
+	<form action="/users/billing" method="post" class="form-horizontal" id="billingform" accept-charset="utf-8">
+		<label for="address" class="control-label">Street Address</label>
+		<span class="help-inline">  Street Name and/or apartment number</span>
+		<input name="address" placeholder="W 123 Street" type="text" value="" id="address">
+		<label for="zip" class="control-label">Post/Zip Code</label>
+		<input name="zip" type="text" value="" id="zip">
+		<label for="city" class="control-label">City</label>
+		<input name=city" type="text" id="city">
+		<label for="country" class="control-label">Country</label></br>
+		<select name="country" id="country">
+			<option value=""></option>
+			<option value="GB">United Kingdom</option>
+			<option value="IR"> Ireland</option>
+			<option value="US">USA</option>
+		</select></br>
+		<input type="submit" value="Save Billing Address">
+	</form>
 </div>
-</div>
-</div>
+
+<div class="box1">
+	<h3>Delivery Address</h3>
+	<form action="/users/delivery" method="post" class="form-horizontal" id="billingform" accept-charset="utf-8">
+		<label for="address" class="control-label">Street Address</label>
+		<span class="help-inline">  Street Name and/or apartment number</span>
+		<input name="address" placeholder="W 123 Street" type="text" value="" id="address">
+		<label for="zip" class="control-label">Post/Zip Code</label>
+		<input name="zip" type="text" value="" id="zip">
+		<label for="city" class="control-label">City</label>
+		<input name=city" type="text" id="city">
+		<label for="country" class="control-label">Country</label></br>
+		<select name="country" id="country">
+			<option value=""></option>
+			<option value="GB">United Kingdom</option>
+			<option value="IR"> Ireland</option>
+			<option value="US">USA</option>
+		</select></br>
+		<input type="submit" value="Save Delivery Address">
+	</form>
 </div>
