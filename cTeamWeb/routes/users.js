@@ -29,7 +29,23 @@ function createMySQLConnection(){
 
 //Settings
 router.get('/settings', function(req, res){ 
-	res.render('settings'); 
+	db = createMySQLConnection();
+	db.connect(function(err) {
+	  if (err) {
+		console.log('Mysql Connection error:', err);
+	  }
+	  else{
+		console.log('Mysql Connected');
+	  }
+	});
+	var sql = "SELECT Email FROM Users WHERE UserID =" + mysql.escape(2);
+	db.query(sql, function(err, results, fields){
+		var email = results[0];
+		console.log(results[0]);
+		res.render('settings', {
+			email: email.Email
+		})
+	})
 });
 //Basket
 router.get('/basket', function(req, res){ 
@@ -78,7 +94,6 @@ router.post('/email', function(req, res){
 	  else{
 		console.log('Mysql Connected');
 	  }
-	  
 	});
 	app.use(express.urlencoded());
 	const regex = /\S+@\S+/
