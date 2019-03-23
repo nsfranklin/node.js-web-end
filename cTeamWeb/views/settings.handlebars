@@ -2,7 +2,7 @@
 	<h3>User Settings</h3>
 	<form action="/users/email" method="post" class="form-horizontal" id="billingform" accept-charset="utf-8">
 		<label for="email" >Email Address</label>
-		<input name="email" placeholder="email@placeholder.co.uk" type="text" id="email" value={{{'email'}}}>
+		<input name="email" placeholder="email@placeholder.co.uk" type="text" id="email" value='{{email}}'>
 		<input type="submit" value="Save User Settings">
 	</form>
 	</br></br>
@@ -20,11 +20,13 @@
 	<p> Which cameras have been used?</p>
 	<form action="/users/cameraSetting" method="POST">
 		<label for="settingsInput">Sensor Width</label>
-		<input type="text" id="settingsInput" name="sensorWidth" placeholder="---" value={{{'sensorWidth1'}}}>
+		<input type="text" id="settingsInput" name="sensorWidth" placeholder="---" value='{{{sensorWidth1}}}'>
 		<label for="settingsInput">Focus Length</label>
-		<input type="text" id="settingsInput" name="focusLength" placeholder="---"  value={{{'focusLength1'}}}>
+		<input type="text" id="settingsInput" name="focusLength" placeholder="---"  value='{{{focusLength1}}}'>
 		<input type="submit" value="Save Camera 1">
 	</form>
+	
+	<!--
 	<form action="/users/cameraSetting" method="POST">
 		<label for="settingsInput">Sensor Width</label>
 		<input type="text" id="settingsInput" name="sensorWidth" placeholder="---" value={{{'sensorWidth2'}}}>
@@ -32,6 +34,7 @@
 		<input type="text" id="settingsInput" name="focusLength" placeholder="---" value={{{'focusLength2'}}}>
 		<input type="submit" value="Save Camera 2">
 	</form>
+	-->
 </div>
 
 <div class="box1">

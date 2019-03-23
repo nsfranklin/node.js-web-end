@@ -16,9 +16,9 @@ function createMySQLConnection(){
 	  user     : 'nodeserver',
 	  password : '54Tjltl9LgSWHxrx2AVo',
 	  database : 'cTeamTeamProjectDatabase',
-	  ssl  : 'Amazon RDS'
+	  ssl  : 'Amazon RDS',
+	  multipleStatements: true
 	  });
-	  
 	  return db;
 }
 
@@ -42,13 +42,52 @@ function resWithSettingDetails(res){
 		console.log('Mysql Connected');
 	  }
 	});
-	var sql = "SELECT Email FROM Users WHERE UserID =" + mysql.escape(2);
+	var sql1 = "SELECT Email FROM Users WHERE UserID =" + mysql.escape(2) + ";";
+	var sql2 = " SELECT SensorSize, FocusLength FROM CameraDetails WHERE UserID=" + mysql.escape(2) + " LIMIT 1;";
+	var sql3 = " SELECT FirstName, LastName, AddressNum, AddressLine, City, PostalCode, Country, AddressType FROM Address WHERE UserID=" + mysql.escape(2) ;
+	var sql = sql1.toString() + sql2.toString() + sql3.toString();
+	console.log(sql);
 	db.query(sql, function(err, results, fields){
-		var results = results[0];
-		console.log(results);
+		var Users = results[0];
+		var CameraDetails = results[1];
+		var Address = results[2];
+		var email = Users[0];
+		var sensorWidth1 = CameraDetails[0];
+		var focusLength1 = CameraDetails[1];
+		var BFirstName = "c";
+		var BSurname = "d";
+		var baddressnumber = "e";
+		var baddressname = "f";
+		var bpostcode = "g";
+		var bcity = "h";
+		var bcountry = "i";
+		var DFirstName = "j";
+		var DSurname = "k";
+		var daddressnumber = "l";
+		var daddressname = "q";
+		var dpostcode = "e";
+		var dcity = "s";
+		var dcountry = "f";
+		console.log(Users[0]);
 		res.render('settings', {
-			email: results.Email
-		})
+			email: email
+			,sensorWidth1: sensorWidth1
+			,focusLength1: focusLength1
+			,BFirstName: BFirstName
+			,BSurname: BSurname
+			,baddressnumber: baddressnumber
+			,baddressname: baddressname
+			,bpostcode: bpostcode
+			,bcity: bcity
+			,bcountry: bcountry
+			,DFirstName: DFirstName
+			,DSurname: DSurname
+			,daddressnumber: daddressnumber
+			,daddressname: daddressname
+			,dpostcode: dpostcode
+			,dcity: dcity
+			,dcountry: dcountry
+		});
 	})
 }	
 //Basket
