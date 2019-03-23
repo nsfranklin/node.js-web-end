@@ -29,9 +29,9 @@
 	<!--
 	<form action="/users/cameraSetting" method="POST">
 		<label for="settingsInput">Sensor Width</label>
-		<input type="text" id="settingsInput" name="sensorWidth" placeholder="---" value={{{'sensorWidth2'}}}>
+		<input type="text" id="settingsInput" name="sensorWidth" placeholder="---" value='{{{sensorWidth2}}}'>
 		<label for="settingsInput">Focus Length</label>
-		<input type="text" id="settingsInput" name="focusLength" placeholder="---" value={{{'focusLength2'}}}>
+		<input type="text" id="settingsInput" name="focusLength" placeholder="---" value='{{{focusLength2}}}'>
 		<input type="submit" value="Save Camera 2">
 	</form>
 	-->
@@ -41,19 +41,19 @@
 	<h3>Billing Address</h3>
 	<form action="/users/billing" method="post" class="form-horizontal" id="billingform" accept-charset="utf-8">
 		<label for="BFirstName" >First Name</labe>
-		<input name="BFirstName" type="text" id="BFirstName" value={{{'BFirstName'}}}> 
+		<input name="BFirstName" type="text" id="BFirstName" value='{{{BFirstName}}}'> 
 		<label for="BSurname" >Surname</labe>
-		<input name="BSurname" type="text" id="BSurname" value={{{'BSurname'}}}>
+		<input name="BSurname" type="text" id="BSurname" value='{{{BSurname}}}'>
 		<label for="baddressnumber" >Address Lines</label>
-		<input number="baddressnumber" placeholder="" type="text" id="baddressnumber" value={{{'baddressnumber'}}}>
-		<input name="baddressname" placeholder="" type="text" id="baddressname" value={{{'baddressname'}}}>
+		<input number="baddressnumber" placeholder="" type="text" id="baddressnumber" value='{{{baddressnumber}}}'>
+		<input name="baddressname" placeholder="" type="text" id="baddressname" value='{{{baddressname}}}'>
 		<label for="zip" >Post/Zip Code</label>
-		<input name="zip" type="text" id="zip" value={{{'bpostcode'}}}>
+		<input name="zip" type="text" id="zip" value='{{{bpostcode}}}'>
 		<label for="city" >City</label>
-		<input name=city" type="text" id="city" value={{{'bcity'}}}>
+		<input name=city" type="text" id="city" value='{{{bcity}}}'>
 		<label for="country" >Country</label></br>
 		<select name="country" id="country">
-			<option value={{{bccode}}}>{{{bcountry}}}</option>
+			<option value='{{{bccode}}}'>{{{bcountry}}}</option>
 			<option value="AF">Afghanistan</option>
 			<option value="AX">Åland Islands</option>
 			<option value="AL">Albania</option>
@@ -310,19 +310,19 @@
 	<h3>Delivery Address</h3>
 	<form action="/users/delivery" method="post" class="form-horizontal" id="billingform" accept-charset="utf-8">
 		<label for="DFirstName">First Name</labe>
-		<input name="DFirstName" type="text" id="DFirstName" value={{{'DFirstName'}}}> 
+		<input name="DFirstName" type="text" id="DFirstName" value='{{{DFirstName}}}'> 
 		<label for="DSurname">Surname</labe>
-		<input name="DSurname" type="text" id="DSurname" value={{{'DSurname'}}}>
+		<input name="DSurname" type="text" id="DSurname" value='{{{DSurname}}}'>
 		<label for="daddressnumber" >Address Lines</label>
-		<input number="daddressnumber" placeholder="" type="text" id="daddressnumber" value={{{'daddressnumber'}}}>
-		<input name="daddressname" placeholder="" type="text" id="daddressname" value={{{'daddressname'}}}>
+		<input number="daddressnumber" placeholder="" type="text" id="daddressnumber" value='{{{daddressnumber}}}'>
+		<input name="daddressname" placeholder="" type="text" id="daddressname" value='{{{daddressname}}}'>
 		<label for="zip">Post/Zip Code</label>
-		<input name="zip" type="text" id="zip" value={{{dpostcode}}}>
+		<input name="zip" type="text" id="zip" value='{{{dpostcode}}}'>
 		<label for="city">City</label>
-		<input name=city" type="text" id="city" value={{{'dcity'}}}>
+		<input name=city" type="text" id="city" value='{{{dcity}}}'>
 		<label for="country">Country</label></br>
 		<select name="country" id="country">
-			<option value={{{dccode}}}>{{{dcountry}}}</option>
+			<option value='{{{dccode}}}'>{{{dcountry}}}</option>
 			<option value="AF">Afghanistan</option>
 			<option value="AX">Åland Islands</option>
 			<option value="AL">Albania</option>
