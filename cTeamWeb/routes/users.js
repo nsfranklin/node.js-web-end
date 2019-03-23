@@ -45,7 +45,7 @@ function resWithSettingDetails(res){
 	var sql = "SELECT Email FROM Users WHERE UserID =" + mysql.escape(2);
 	db.query(sql, function(err, results, fields){
 		var results = results[0];
-		console.log(results[0]);
+		console.log(results);
 		res.render('settings', {
 			email: results.Email
 		})
@@ -103,7 +103,6 @@ router.post('/email', function(req, res){
 	const regex = /\S+@\S+/
 	var usableEmail = false;
 	var email = req.body.email;
-	console.log(email);
 	if(email !== undefined){
 		usableEmail = regex.test(String(email).toLowerCase())
 		console.log("Valid Email Result: " + usableEmail);
