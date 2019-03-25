@@ -620,6 +620,102 @@ router.post('/delivery', function(req, res){
 	})
 });
 
+router.post('/newListing', function(req, res){
+	db = createMySQLConnection();
+	db.connect(function(err) {
+	  if (err) {
+		console.log('Mysql Connection error:', err);
+	  }
+	  else{
+		console.log('Mysql Connected');
+	  }
+	  
+	});
+	app.use(express.urlencoded());
+	var productName = req.body.pname;
+	var price = req.body.price
+	var productDescription = req.body.pdescription
+	var condition = req.body.condition
+	var brand = req.body.brand
+	var type = req.body.type
+	var size = req.body.size
+	var colour = req.body.colour
+	var material = req.body.material
+	var sex = req.body.sex
+	
+	var allNonNull = checkforEmpty(res,productName,price,productDescription,condition,brand,type,size,colour,material,sex); 
+	
+	console.log(allNonNull);
+	
+	if(allNonNull){
+		res.render('uploads');	
+	}else{
+		resWithUploadDetails(res, productName,price,productDescription,condition,brand,type,size,colour,material,sex);
+	}
+	
+	
+	console.log(productName);
+	console.log(price);
+	console.log(productDescription);
+	console.log(condition);
+	console.log(brand);
+	console.log(type);
+	console.log(size);
+	console.log(colour);
+	console.log(material);
+	console.log(sex);
+	//var selectSQL = "INSERT 
+});
+
+function resWithUploadDetails(res,productName,price,productDescription,condition,brand,type,size,colour,material,sex){
+	res.render('uploads', {
+	productName: productName
+	,price: price
+	,productDescription: productDescription
+	,condition: condition
+	,brand: brand
+	,type: type
+	,size: size
+	,colour: colour
+	,material: material
+	,sex: sex
+	});
+}
+
+function checkforEmpty(res,a,b,c,d,e,f,g,h,i,j){
+	if(a==""|| null){
+		return false;
+	}
+	if(b==""|| null){
+		return false;
+	}	
+	if(c==""|| null){
+		return false;
+	}	
+	if(d==""|| null){
+		return false;		
+	}
+	if(e==""|| null){
+		return false;	
+	}
+	if(f==""|| null){
+		return false;	
+	}
+	if(g==""|| null){
+		return false;	
+	}
+	if(h==""|| null){
+		return false;
+	}
+	if(i==""|| null){
+		return false;
+	}
+	if(j==""|| null){
+		return false;
+	}
+	return true;
+}
+
 /****************************************************************************************/
 
 module.exports = function(passport) {

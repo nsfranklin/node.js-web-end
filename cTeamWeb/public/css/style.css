@@ -288,7 +288,7 @@ input[type=text]:focus{
 
 .box3{
   width: 450px;
-  height: 450px;
+  height: auto;
   padding: auto;
   top: 350px;
   left: -15px;

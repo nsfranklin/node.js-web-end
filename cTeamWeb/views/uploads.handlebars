@@ -1,69 +1,53 @@
+
 <div class="box">
 	<h3>Upload photos here</h3>
-<script class="jsbin" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-<div class="file-upload">
-  <button class="file-upload-btn" type="button" onclick="$('.file-upload-input').trigger( 'click' )">Add Image</button>
-
-  <div class="image-upload-wrap">
-    <input class="file-upload-input" type='file' onchange="readURL(this);" accept="image/*" />
-    <div class="drag-text">
-      <h3>Drag and drop a file or select add Image</h3>
-    </div>
-  </div>
-  <div class="file-upload-content">
-    <img class="file-upload-image" src="#" alt="your image" />
-    <div class="image-title-wrap">
-      <button type="button" onclick="removeUpload()" class="remove-image">Remove <span class="image-title">Uploaded Image</span></button>
-      <input type="submit" name="" value="Upload">
-    </div>
-  </div>
+	<script class="jsbin" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+	<button class="file-upload-btn" type="button" onclick="$('.file-upload-input').trigger( 'click' )">Add Image</button>
+	<input class="file-upload-input" type='file' onchange="readURL(this);" accept="image/*" />
+	<h3>Drag and drop a file or select add Image</h3>
+	<img class="file-upload-image" src="#" alt="your image" />
+    <button type="button" onclick="removeUpload()" class="remove-image">Remove <span class="image-title">Uploaded Image</span></button>
+    <input type="submit" name="" value="Upload">
 </div>
-</div>
-
-
 <div class="box3">
-  <div class="container1">
-  <h5> Product Description <h5>
-    <p> Add the relevant details to your products here </p>
-
-<label>Condition</label>
-<select class="mdb-select md-form colorful-select dropdown-primary">
-  <option value="1">New</option>
-  <option value="2">Used</option>
-</select>
-
-<section>
-<label>Brand</label>
-<input type="value" name="" value="" id="">
-</select>
-
-<section>
-<label>Type</label>
-<select class="mdb-select md-form colorful-select dropdown-primary">
-  <option value="1">Boots</option>
-  <option value="2">Trainer</option>
-  <option value="2">Smart Shoes</option>
-  <option value="2">Slippers</option>
-</select>
-</section>
-<section>
-<label>Size</label>
-<input type="value" name="" value" id">
-</section>
-<label>Colour</label>
-<input type="color" value="#ff0000">
-
-<section>
-<label>Sex</label>
-<select class="mdb-select md-form colorful-select dropdown-primary">
-  <option value="1">Male</option>
-  <option value="2">Female</option>
-  <option value="2">Unisex</option>
-</select>
-</section>
-
-<input type="submit" name="Save" value="Save">
-
-
-</div>
+	<h5> Product Description <h5>
+	<p> Add the relevant details to your products here </p>
+	<form action="/users/newListing" method="POST">
+		<label>Product Name</label></br>
+		<input type="text" id="pname" name="pname" value="{{{productName}}}">
+		<label>Price</label>
+		<input type="text" id="price" name="price" value="{{{price}}}">
+		<label>Product Description</label>
+		<input type="text" id="pdescription" name="pdescription" value="{{{productDescription}}}">
+		<label>Condition</label></br>
+		<select class="mdb-select md-form colorful-select dropdown-primary" id="condition" name="condition">
+			<option value="default">{{{condition}}}</option>
+			<option value="new">New</option>
+			<option value="used">Used</option>
+		</select></br></br>
+		<label>Brand</label></br>
+		<input type="text" id="brand" name="brand" value="{{{brand}}}"></br>
+		<label>Type</label></br>
+		<select class="mdb-select md-form colorful-select dropdown-primary" id="type" name="type">
+			<option value="default">{{{type}}}</option>
+			<option value="Boots">Boots</option>
+			<option value="Trainers">Trainers</option>
+			<option value="Smart Shoes">Smart Shoes</option>
+			<option value="Slippers">Slippers</option>
+		</select></br></br>
+		<label>Size</label></br>
+		<input type="text" name="size" id="size" value="{{{size}}}"></br>
+		<label>Colour</label></br>
+		<input type="color" name="colour" value="{{{colour}}}" id="colour"></br>
+		<label>Material</label>
+		<input type="text" name="material" id="material" value="{{{material}}}">
+		<label>Sex</label></br>
+		<select class="mdb-select md-form colorful-select dropdown-primary" id="sex" name="sex">
+			<option value="default">{{{sex}}}</option>
+			<option value="male">Male</option>
+			<option value="female">Female</option>
+			<option value="unisex">Unisex</option>
+		</select></br></br>
+		<input type="submit" name="Save" value="Save">
+	</form>
 </div>
