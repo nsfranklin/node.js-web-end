@@ -389,6 +389,7 @@ function resWithSettingDetails(res){
 				dcity = Address[0].City;
 				dccode = Address[0].Country;
 				dcountry = getCountryName(dccode);
+				show = true;
 			}else if(Address[0].AddressType == 2){
 				BFirstName = Address[0].FirstName;
 				BSurname = Address[0].LastName;
@@ -422,6 +423,7 @@ function resWithSettingDetails(res){
 			,bcity: bcity
 			,bccode: bccode
 			,bcountry: bcountry
+			,show: show
 			,DFirstName: DFirstName
 			,DSurname: DSurname
 			,daddressnumber: daddressnumber

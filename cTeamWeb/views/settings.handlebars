@@ -302,10 +302,12 @@
 			<option value="ZM">Zambia</option>
 			<option value="ZW">Zimbabwe</option>
 		</select></br>
+		<lable for="dasbtoggle">Use As Delivery Address </lable><input type="checkbox" name="dasbtoggle" ></br>
 		<input type="submit" value="Save Billing Address">
 	</form>
 </div>
 
+{{#if show}}
 <div class="box1">
 	<h3>Delivery Address</h3>
 	<form action="/users/delivery" method="post" class="form-horizontal" id="billingform" accept-charset="utf-8">
@@ -574,3 +576,4 @@
 		<input type="submit" value="Save Delivery Address">
 	</form>
 </div>
+{{/if}}
