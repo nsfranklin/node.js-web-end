@@ -328,6 +328,7 @@ function resWithSettingDetails(res){
 		var dcity = "";
 		var dccode = "";
 		var dcountry = "";
+		var shows = false;
 		console.log(results);
 		console.log(CameraDetails[0]);
 		console.log(Address.length);
