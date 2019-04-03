@@ -6,6 +6,8 @@ var mysql = require('mysql');
 var fs = require('fs');
 var bcrypt = require('bcryptjs');
 var app = express();
+var userID = 2;
+var d = new Date();
 
 //Connect to Mysql db
 var db;
@@ -328,7 +330,7 @@ function resWithSettingDetails(res){
 		var dcity = "";
 		var dccode = "";
 		var dcountry = "";
-		var shows = false;
+		var show = false;
 		console.log(results);
 		console.log(CameraDetails[0]);
 		console.log(Address.length);
@@ -643,18 +645,26 @@ router.post('/newListing', function(req, res){
 	var colour = req.body.colour
 	var material = req.body.material
 	var sex = req.body.sex
-	
 	var allNonNull = checkforEmpty(res,productName,price,productDescription,condition,brand,type,size,colour,material,sex); 
 	
 	console.log(allNonNull);
 	
 	if(allNonNull){
+		console.log("All Null");
+		var pending = "0";
+		var state = "pending";
+		var CameraID = 1;
+		var DateCreated = new Date().toISOString().slice(0, 19).replace('T', ' ');;
+		var CoverImageID = getRndInteger(1,100);
+		var colourName = "tempColour";//findColour();
+		var SQL = "INSERT INTO Product(SellerID,Price,`Product`.`Name`,Description,DateCreated,Pending,`Product`.`Condition`,Colour,Brand,`Product`.`Type`,Size,Material,Sex,State,CameraID,CoverImageID) VALUES(" + userID + "," + price + ",\"" + productName + "\",\"" + productDescription + "\",\"" + DateCreated + "\"," + pending + ",\"" + condition + "\",\"" + colourName + "\",\"" + brand + "\",\"" + type + "\"," + size + ",\"" + material + "\",\"" + sex + "\",\"" + state + "\"," + CameraID + ",\"" + CoverImageID + "\")";
+		db.query(SQL, function(error, results, fields){console.log(error)});
 		res.render('uploads');	
 	}else{
 		resWithUploadDetails(res, productName,price,productDescription,condition,brand,type,size,colour,material,sex);
 	}
 	
-	
+	/*
 	console.log(productName);
 	console.log(price);
 	console.log(productDescription);
@@ -665,6 +675,7 @@ router.post('/newListing', function(req, res){
 	console.log(colour);
 	console.log(material);
 	console.log(sex);
+	*/
 	//var selectSQL = "INSERT 
 });
 
@@ -717,7 +728,27 @@ function checkforEmpty(res,a,b,c,d,e,f,g,h,i,j){
 	return true;
 }
 
+function getRndInteger(min, max) {
+  return Math.floor(Math.random() * (max - min) ) + min;
+}
 /****************************************************************************************/
+
+function getCurrentDate(){
+	var result;
+	var month = d.getMonth() + 1;
+	var day = d.getDate();
+	if(month < 10){
+		month = "0" + month.toString();
+		console.log(month);
+	}
+	if(day <10){
+		day = "0" + day.toString();
+		console.log(day);
+	}
+	result = d.getFullYear() + "-" + month +"-"+day+" "+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds();
+	console.log(result);
+	return result;
+}
 
 module.exports = function(passport) {
  passport.serializeUser(function(user, done){
