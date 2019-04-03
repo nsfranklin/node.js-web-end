@@ -1,13 +1,11 @@
 
 <div class="box1">
-	<h3>Upload photos here</h3>
-	<script class="jsbin" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-	<button class="file-upload-btn" type="button" onclick="$('.file-upload-input').trigger( 'click' )">Add Image</button>
-	<input class="file-upload-input" type='file' onchange="readURL(this);" accept="image/*" />
-	<h3>Drag and drop a file or select add Image</h3>
-	<img class="file-upload-image" src="#" alt="your image" />
-    <button type="button" onclick="removeUpload()" class="remove-image">Remove <span class="image-title">Uploaded Image</span></button></br>
-    <input type="submit" name="" value="Upload">
+	<h3>Upload Photos For Listing</h3>
+	<form action="/users/insertImage" method="POST">
+		<label for="file">Click to Upload Images</label>
+		<input type="file" name="file" id="file" class="upload" onchange="readURL(this)" accept="image/png" multiple /><br/>
+		<input type="submit" name="" value="Upload">
+	<form> 
 </div>
 <div class="box1">
 	<h5> Product Description <h5>

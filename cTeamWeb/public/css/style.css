@@ -269,6 +269,9 @@ input[type=text]:focus{
   padding: 15px;
 }
 
+input#file.upload{
+	display: none;
+}
 
 .box2{
   width: 800px;
