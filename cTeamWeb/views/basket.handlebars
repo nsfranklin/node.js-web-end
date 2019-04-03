@@ -8,18 +8,29 @@
         <thead>
           <tr>
             <th class="first">Photo</th>
-            <th class="second">Qty</th>
-            <th class="third">Product</th>
-            <th class="fourth">Line Total</th>
-            <th class="fifth">&nbsp;</th>
+            <th class="second">Product</th>
+            <th class="third">Line Total</th>
+            <th class="forth">&nbsp;</th>
           </tr>
         </thead>
         <tbody>
-          <!-- shopping cart contents -->
+		
+		{{#each basketItem}}
+          <tr class="productitm">
+            <td><img src="images/thumbs.jpg" class="thumb"></td>
+            <td>{{@index}}: {{name}}</td>
+            <td>{{@index}}: {{price}}</td>
+            <td><span class="remove"><img src="https://i.imgur.com/h1ldGRr.png" alt="X"></span></td>
+          </tr>		
+		
+		{{else}}
+          	<h3>Cart Empty</h3>
+				
+		{{/each}}
+		
           <tr class="productitm">
             <!-- http://www.inkydeals.com/deal/ginormous-bundle/ -->
             <td><img src="images/thumbs.jpg" class="thumb"></td>
-            <td><input type="number" value="1" min="0" max="99" class="qtyinput"></td>
             <td>Clarks Oxfords</td>
             <td>$79.00</td>
             <td><span class="remove"><img src="https://i.imgur.com/h1ldGRr.png" alt="X"></span></td>
@@ -27,7 +38,6 @@
           <tr class="productitm">
             <!-- http://www.amazon.com/Stuff-My-Cat-The-Book/dp/0811855384 -->
             <td><img src="https://i.imgur.com/RkzoXzZ.png" class="thumb"></td>
-            <td><input type="number" value="1" min="0" max="99" class="qtyinput"></td>
             <td>Stuff on my Cat: The Book</td>
             <td>$8.95</td>
             <td><span class="remove"><img src="https://i.imgur.com/h1ldGRr.png" alt="X"></span></td>
@@ -35,7 +45,6 @@
           <tr class="productitm">
             <!-- http://www.amazon.com/SpongeBob-SquarePants-The-First-Episodes/dp/B002DYJTVW -->
             <td><img src="https://i.imgur.com/vZ26Uwy.png" class="thumb"></td>
-            <td><input type="number" value="1" min="0" max="99" class="qtyinput"></td>
             <td>SpongeBob's First 100 Episodes</td>
             <td>$75.00</td>
             <td><span class="remove"><img src="https://i.imgur.com/h1ldGRr.png" alt="X"></span></td>
@@ -43,7 +52,6 @@
           <tr class="productitm">
             <!-- http://www.barnesandnoble.com/w/javascript-and-jquery-david-sawyer-mcfarland/1100405042 -->
             <td><img src="https://i.imgur.com/tEdRnz4.png" class="thumb"></td>
-            <td><input type="number" value="1" min="0" max="99" class="qtyinput"></td>
             <td>JavaScript &amp; jQuery: The Missing Manual</td>
             <td>$27.50</td>
             <td><span class="remove"><img src="https://i.imgur.com/h1ldGRr.png" alt="X"></span></td>
@@ -54,12 +62,8 @@
             <td colspan="2">&nbsp;</td>
             <td colspan="2"><span class="thick">$225.45</span></td>
           </tr>
-          
-          <!-- checkout btn -->
-          <tr class="checkoutrow">
-            <td colspan="5" class="checkout"><button id="submitbtn">Checkout Now!</button></td>
-          </tr>
         </tbody>
       </table>
+	  <button id="submitbtn">Checkout Now!</button>
     </div>
   </div>

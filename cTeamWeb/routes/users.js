@@ -440,7 +440,7 @@ function resWithSettingDetails(res){
 }	
 //Basket
 router.get('/basket', function(req, res){ 
-	res.render('basket'); 
+	resBasket(res, userID); 
 });
 //Image upolads
 router.get('/uploads', function(req, res){ 
@@ -623,6 +623,9 @@ router.post('/delivery', function(req, res){
 	})
 });
 
+router.post('/insertImage', function(req, res){
+});
+
 router.post('/newListing', function(req, res){
 	db = createMySQLConnection();
 	db.connect(function(err) {
@@ -691,6 +694,18 @@ function resWithUploadDetails(res,productName,price,productDescription,condition
 	,colour: colour
 	,material: material
 	,sex: sex
+	});
+}
+
+function resBasket(res,userID){
+	var basketItem = new Array(1 , 2, 3);
+	var name = new Array("product 1" , "product 2", "product 3");
+	var price = new Array(100, 2323, 8);
+	
+	res.render('basket', {
+		basketItem: basketItem,
+		name: name,
+		price: price
 	});
 }
 
