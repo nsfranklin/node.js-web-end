@@ -18,8 +18,8 @@
 		{{#each basketItem}}
           <tr class="productitm">
             <td><img src="images/thumbs.jpg" class="thumb"></td>
-            <td>{{@index}}: {{name}}</td>
-            <td>{{@index}}: {{price}}</td>
+            <td>{{lookup name @key}}</td>
+            <td>{{lookup price @key}}</td>
             <td><span class="remove"><img src="https://i.imgur.com/h1ldGRr.png" alt="X"></span></td>
           </tr>		
 		
