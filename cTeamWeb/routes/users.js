@@ -698,15 +698,33 @@ function resWithUploadDetails(res,productName,price,productDescription,condition
 }
 
 function resBasket(res,userID){
-	var basketItem = new Array(1 , 2, 3);
-	var name = new Array("product 1" , "product 2", "product 3");
-	var price = new Array(100, 2323, 8);
-	
-	res.render('basket', {
-		basketItem: basketItem,
-		name: name,
-		price: price
+	db = createMySQLConnection();
+	db.connect(function(err) {
+	  if (err) {
+		console.log('Mysql Connection error:', err);
+	  }
+	  else{
+		console.log('Mysql Connected');
+	  }
 	});
+	app.use(express.urlencoded());
+	var sql = "Select Name, Price, ImageBlob From Basket, Product, Image Where Basket.UserID =" +mysql.escape(37) + " AND Basket.ProductID = Product.ListingID"
+	var results;
+	db.query(sql, function(error, results, fields){
+		console.log(sql);
+		//console.log(results);
+		console.log(error);
+		for(int i = 0 ; i < results.lenght ; i++){
+		 results[0].push();
+		}
+		res.render('basket', {
+			basketItem: results
+		});
+	})
+}
+
+function getBasket(){
+
 }
 
 function checkforEmpty(res,a,b,c,d,e,f,g,h,i,j){
