@@ -6,7 +6,7 @@ var mysql = require('mysql');
 var fs = require('fs');
 var bcrypt = require('bcryptjs');
 var app = express();
-var userID = 2;
+var userID = 37;
 var d = new Date();
 
 //Connect to Mysql db
@@ -626,6 +626,30 @@ router.post('/delivery', function(req, res){
 router.post('/insertImage', function(req, res){
 });
 
+router.post('/removeItem', function(req,res){
+	db = createMySQLConnection();
+	db.connect(function(err) {
+	  if (err) {
+		console.log('Mysql Connection error:', err);
+	  }
+	  else{
+		console.log('Mysql Connected');
+	  }
+	});
+	app.use(express.urlencoded());
+	var ProductID = req.body.ProductID;
+	var sql = "DELETE FROM Basket WHERE UserID=" + mysql.escape(userID) + " AND " + "ProductID=" + mysql.escape(ProductID);
+	console.log(sql);
+	db.query(sql, function(error, results, fields){
+	console.log(error);
+	resBasket(res, userID);
+	});
+});
+
+router.post('/checkout', function(req,res){
+	
+});
+
 router.post('/newListing', function(req, res){
 	db = createMySQLConnection();
 	db.connect(function(err) {
@@ -708,14 +732,26 @@ function resBasket(res,userID){
 	  }
 	});
 	app.use(express.urlencoded());
-	var sql = "Select Name, Price, ImageBlob From Basket, Product, Image Where Basket.UserID =" +mysql.escape(37) + " AND Basket.ProductID = Product.ListingID"
+	var sql = "Select Name, Price, ImageBlob, ImageID, Product.ListingID  From Basket, Product, Image Where Basket.UserID =" +mysql.escape(userID) + " AND Basket.ProductID = Product.ListingID AND Product.CoverImageID = Image.ImageID"
 	var results;
 	db.query(sql, function(error, results, fields){
 		console.log(sql);
-		//console.log(results);
+		console.log(results);
 		console.log(error);
-		for(int i = 0 ; i < results.lenght ; i++){
-		 results[0].push();
+		var imageBuffer;//request.file.buffer;
+		var imageName = 'public/Image/';
+		var imageReturnedName = '/Image/';
+		var imagePath = imageName;
+		var imageReturnedPath = imageReturnedName;
+		for(var i = 0 ; i < results.length ; i++){
+			imageBuffer = results[i].ImageBlob;
+			imagePath = imageName + results[i].ImageID + ".png";
+			imageReturnedPath = imageReturnedName + results[i].ImageID + ".png";
+			if(!fs.existsSync(imagePath)){
+				fs.createWriteStream(imagePath).write(imageBuffer);
+			}
+			results[i].ImageBlob = imageReturnedPath;
+			console.log(results);
 		}
 		res.render('basket', {
 			basketItem: results
@@ -723,9 +759,7 @@ function resBasket(res,userID){
 	})
 }
 
-function getBasket(){
 
-}
 
 function checkforEmpty(res,a,b,c,d,e,f,g,h,i,j){
 	if(a==""|| null){

@@ -164,6 +164,12 @@ h5{
   padding: 15px
 }
 
+
+
+img.resize{
+	max-height:10%;
+}
+
 /*--------------------------------------------------------------Box Headings----------------------------------*/
 .box h3{
 	margin: 0;
@@ -267,6 +273,11 @@ input[type=text]:focus{
   border-radius: 10px;
   color: #d0ba7a !important;
   padding: 15px;
+}
+
+.cart{
+	padding: 15px;
+	text-align: left;
 }
 
 input#file.upload{

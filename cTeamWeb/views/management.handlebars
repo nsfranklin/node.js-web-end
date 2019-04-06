@@ -1,0 +1,77 @@
+<div class="box1">
+    <div id="w">
+    <header id="title">
+      <h1>My Orders</h1>
+    </header>
+    <div id="page">
+      <table class="cart">
+        <thead>
+		{{#if basketItem.length}}
+          <tr>
+            <th class="first">Photo</th>
+            <th class="second">Product</th>
+            <th class="third">Price</th>
+            <th class="forth">&nbsp;</th>
+          </tr>
+        </thead>
+		{{/if}}
+        <tbody>
+		{{#each basketItem}}
+          <tr class="productitm">
+            <td><img class="resize" src="{{this.ImageBlob}}"></td> <!-- Not actually blob actually a file path -->
+			<td>{{this.Name}}</td>
+            <td>£{{this.Price}}</td>
+			<td>
+				<form action="/users/removeItem" method="POST">
+					<input name="ProductID" type="hidden" value="{{this.ListingID}}"></input>
+					<input name="remove" type="image" src="https://i.imgur.com/h1ldGRr.png">
+				</form>
+			</td>
+		  </tr>	
+		{{else}}
+			<h3>No Orders</h3>
+		{{/each}}
+        </tbody>
+      </table>
+    </div>
+	</div>
+</div>
+
+<div class="box1">
+    <div id="w">
+    <header id="title">
+      <h1>My Sales</h1>
+    </header>
+    <div id="page">
+      <table class="cart">
+        <thead>
+		{{#if basketItem.length}}
+          <tr>
+            <th class="first">Photo</th>
+            <th class="second">Product</th>
+            <th class="third">Price</th>
+            <th class="forth">&nbsp;</th>
+          </tr>
+        </thead>
+		{{/if}}
+        <tbody>
+		{{#each basketItem}}
+          <tr class="productitm">
+            <td><img class="resize" src="{{this.ImageBlob}}"></td> <!-- Not actually blob actually a file path -->
+			<td>{{this.Name}}</td>
+            <td>£{{this.Price}}</td>
+			<td>
+				<form action="/users/removeItem" method="POST">
+					<input name="ProductID" type="hidden" value="{{this.ListingID}}"></input>
+					<input name="remove" type="image" src="https://i.imgur.com/h1ldGRr.png">
+				</form>
+			</td>
+		  </tr>	
+		{{else}}
+			<h3>No Sales</h3>
+		{{/each}}
+        </tbody>
+      </table>
+    </div>
+	</div>
+</div>
