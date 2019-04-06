@@ -6,17 +6,17 @@
     <div id="page">
       <table class="cart">
         <thead>
-		{{#if basketItem.length}}
+		{{#if orderItem.length}}
           <tr>
-            <th class="first">Photo</th>
+            <th class="first">&nbsp;</th>
             <th class="second">Product</th>
-            <th class="third">Price</th>
+            <th class="third">Status</th>
             <th class="forth">&nbsp;</th>
           </tr>
         </thead>
 		{{/if}}
         <tbody>
-		{{#each basketItem}}
+		{{#each orderItem}}
           <tr class="productitm">
             <td><img class="resize" src="{{this.ImageBlob}}"></td> <!-- Not actually blob actually a file path -->
 			<td>{{this.Name}}</td>
@@ -45,11 +45,11 @@
     <div id="page">
       <table class="cart">
         <thead>
-		{{#if basketItem.length}}
+		{{#if sOrder.length}}
           <tr>
-            <th class="first">Photo</th>
+            <th class="first">&nbsp;</th>
             <th class="second">Product</th>
-            <th class="third">Price</th>
+            <th class="third">Status</th>
             <th class="forth">&nbsp;</th>
           </tr>
         </thead>

@@ -455,6 +455,10 @@ router.get('/login', function(req, res){
 	res.render('login'); 
 });
 
+router.get('/management', function(req, res){
+	res.render('management');
+});
+
 router.post('/login', passport.authenticate('local-login', {
   successRedirect: '/',
   failureRedirect: '/login',
@@ -759,7 +763,29 @@ function resBasket(res,userID){
 	})
 }
 
-
+function resManagement(res,userID){
+	db = createMySQLConnection();
+	db.connect(function(err) {
+	  if (err) {
+		console.log('Mysql Connection error:', err);
+	  }
+	  else{
+		console.log('Mysql Connected');
+	  }
+	});
+	var sql1 = "";
+	var sql2 = "";
+	var sql = sql1.toString() + sql2.toString() + sql3.toString();
+	console.log(sql);
+	db.query(sql, function(err, results, fields){
+		
+		
+		
+	res.render('management',
+		Orders: results[0];
+		Sales: results[1];
+	});
+}
 
 function checkforEmpty(res,a,b,c,d,e,f,g,h,i,j){
 	if(a==""|| null){
