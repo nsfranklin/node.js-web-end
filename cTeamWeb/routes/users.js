@@ -456,9 +456,12 @@ router.get('/login', function(req, res){
 });
 
 router.get('/management', function(req, res){
-	res.render('management');
+	resManagement(res,userID);
 });
 
+router.get('/listings', function(req, res){
+	resListings(res,userID);
+});
 router.post('/login', passport.authenticate('local-login', {
   successRedirect: '/',
   failureRedirect: '/login',
@@ -651,7 +654,24 @@ router.post('/removeItem', function(req,res){
 });
 
 router.post('/checkout', function(req,res){
-	
+	db = createMySQLConnection();
+	db.connect(function(err) {
+	  if (err) {
+		console.log('Mysql Connection error:', err);
+	  }
+	  else{
+		console.log('Mysql Connected');
+	  }
+	});
+	app.use(express.urlencoded());
+	var ProductID = req.body.ProductID;
+	var sql = "UPDATE Product SET State=" + mysql.escape("ordered") + " WHERE Product.ListingID = (SELECT Product.ListingID From Basket, Product, Image Where Basket.UserID =" + mysql.escape(userID) + " AND Basket.ProductID = Product.ListingID);" ;
+	var sqlDeleteStatement = "DELETE FROM Basket WHERE Basket.UserID =" + mysql.escape(userID);
+	db.query(sql, function(error, results, fields){
+	basketToOrders();
+	sqlNoReturnQuery(sqlDeleteStatement);
+	resManagement(res, userID);
+	//});
 });
 
 router.post('/newListing', function(req, res){
@@ -709,6 +729,43 @@ router.post('/newListing', function(req, res){
 	*/
 	//var selectSQL = "INSERT 
 });
+
+function basketToOrders(){
+	db = createMySQLConnection();
+	db.connect(function(err) {
+	  if (err) {
+		console.log('Mysql Connection error:', err);
+	  }
+	  else{
+		console.log('Mysql Connected');
+	  }
+	});
+	var sql = "SELECT COUNT(UserID) FROM Basket WHERE Basket.UserID=" + mysql.escape(userID);
+	console.log(sql);
+	db.query(sql, function(error, results, fields){
+		console.log(error);
+		console.log(results);
+		var sql = "INSERT INTO Order(PurchaserID, SellerID, ProductID, OrderState
+		for(var i = 0 ; i < results[0].COUNT(UserID); i++){
+			sqlNoReturnQuery();
+		}
+	});
+}
+
+function sqlNoReturnQuery(sql){
+	db = createMySQLConnection();
+	db.connect(function(err) {
+	  if (err) {
+		console.log('Mysql Connection error:', err);
+	  }
+	  else{
+		console.log('Mysql Connected');
+	  }
+	});
+	db.query(sql, function(error, results, fields){
+		console.log(error);
+	});
+}
 
 function resWithUploadDetails(res,productName,price,productDescription,condition,brand,type,size,colour,material,sex){
 	res.render('uploads', {
@@ -773,17 +830,40 @@ function resManagement(res,userID){
 		console.log('Mysql Connected');
 	  }
 	});
-	var sql1 = "";
-	var sql2 = "";
-	var sql = sql1.toString() + sql2.toString() + sql3.toString();
+	var sql1 = "SELECT Product.ListingID, Product.Name, Product.CoverImageID, Price, State FROM `cTeamTeamProjectDatabase`.`Order`, Product WHERE Product.ListingID = Order.ProductID AND PurchaserID =" + mysql.escape(userID) + ";";  //selects users orders
+	var sql2 = "SELECT Product.ListingID, Product.Name, Product.CoverImageID, Price, State FROM `cTeamTeamProjectDatabase`.`Order`, Product WHERE Product.ListingID = Order.ProductID AND Order.SellerID =" + mysql.escape(userID) + ";"; //selects users sales
+	var sql = sql1.toString() + sql2.toString();
 	console.log(sql);
 	db.query(sql, function(err, results, fields){
-		
-		
-		
-	res.render('management',
-		Orders: results[0];
-		Sales: results[1];
+	
+		console.log(err);
+		console.log(results);
+		res.render('management',{
+			Orders: results[0],
+			Sales: results[1]
+		});
+	});
+}
+
+function resListings(res,userID){
+	db = createMySQLConnection();
+	db.connect(function(err) {
+	  if (err) {
+		console.log('Mysql Connection error:', err);
+	  }
+	  else{
+		console.log('Mysql Connected');
+	  }
+	});
+	var sql = "SELECT Product.ListingID, Product.Name, Product.CoverImageID, Price, State FROM Product WHERE SellerID=" + mysql.escape(userID) + ";";  //selects users orders
+	console.log(sql);
+	db.query(sql, function(err, results, fields){
+	
+		console.log(err);
+		console.log(results);
+		res.render('listings',{
+			listings: results
+		});
 	});
 }
 

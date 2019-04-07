@@ -6,23 +6,25 @@
     <div id="page">
       <table class="cart">
         <thead>
-		{{#if orderItem.length}}
+		{{#if Orders.length}}
           <tr>
             <th class="first">&nbsp;</th>
             <th class="second">Product</th>
+			<th>Price</th>
             <th class="third">Status</th>
             <th class="forth">&nbsp;</th>
           </tr>
         </thead>
 		{{/if}}
         <tbody>
-		{{#each orderItem}}
+		{{#each Orders}}
           <tr class="productitm">
-            <td><img class="resize" src="{{this.ImageBlob}}"></td> <!-- Not actually blob actually a file path -->
-			<td>{{this.Name}}</td>
-            <td>£{{this.Price}}</td>
+            <td><img class="resize" src="/Image/{{this.CoverImageID}}.png"></td> <!-- Not actually blob actually a file path -->
+			<td>&nbsp;{{this.Name}}&nbsp;</td>
+            <td>&nbsp;£{{this.Price}}&nbsp;</td>
+            <td>&nbsp;{{this.State}}&nbsp;</td>
 			<td>
-				<form action="/users/removeItem" method="POST">
+				<form action="/users/statusUpdate" method="POST">
 					<input name="ProductID" type="hidden" value="{{this.ListingID}}"></input>
 					<input name="remove" type="image" src="https://i.imgur.com/h1ldGRr.png">
 				</form>
