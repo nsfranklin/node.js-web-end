@@ -28,7 +28,6 @@ function createMySQLConnection(){
 router.get('/settings', function(req, res){ 
 	resWithSettingDetails(res);
 });
-
 var isoCountries = {
     'AF' : 'Afghanistan',
     'AX' : 'Aland Islands',
@@ -276,7 +275,6 @@ var isoCountries = {
     'ZM' : 'Zambia',
     'ZW' : 'Zimbabwe'
 };
-
 function getCountryName(countryCode) {
     if (isoCountries.hasOwnProperty(countryCode)) {
         return isoCountries[countryCode];
@@ -284,7 +282,6 @@ function getCountryName(countryCode) {
         return countryCode;
     }
 }
-
 function resWithSettingDetails(res){
 	db = createMySQLConnection();
 	db.connect(function(err) {
@@ -454,11 +451,9 @@ router.get('/register', function(req, res){
 router.get('/login', function(req, res){ 
 	res.render('login'); 
 });
-
 router.get('/management', function(req, res){
 	resManagement(res,userID);
 });
-
 router.get('/listings', function(req, res){
 	resListings(res,userID);
 });
@@ -467,7 +462,6 @@ router.post('/login', passport.authenticate('local-login', {
   failureRedirect: '/login',
   failureFlash: true
  }),
- 
 function(req, res){
    if(req.body.remember){
     req.session.cookie.maxAge = 1000 * 60 * 3;
@@ -476,13 +470,11 @@ function(req, res){
    }
    res.redirect('/');
   });
-
 router.post('/register', passport.authenticate('reg', {
 	successRedirect:'/login',
 	failureRedirect:'/register',
 	failureFlash: true
 }));
-
 router.post('/email', function(req, res){
 	db = createMySQLConnection();
 	db.connect(function(err) {
@@ -511,7 +503,6 @@ router.post('/email', function(req, res){
 		resWithSettingDetails(res);
 	}
 });
-
 router.post('/password', function(req, res){
 	db = createMySQLConnection();
 	db.connect(function(err) {
@@ -531,7 +522,6 @@ router.post('/password', function(req, res){
 		db.end();
 	})
 });
-
 router.post('/cameraSetting', function(req, res){
 	db = createMySQLConnection();
 	db.connect(function(err) {
@@ -587,7 +577,6 @@ router.post('/cameraSetting', function(req, res){
 		db.end();
 	})
 });
-
 router.post('/billing', function(req, res){
 	db = createMySQLConnection();
 	db.connect(function(err) {
@@ -608,7 +597,6 @@ router.post('/billing', function(req, res){
 		db.end();
 	})
 });
-
 router.post('/delivery', function(req, res){
 	db = createMySQLConnection();
 	db.connect(function(err) {
@@ -629,10 +617,8 @@ router.post('/delivery', function(req, res){
 		db.end();
 	})
 });
-
 router.post('/insertImage', function(req, res){
 });
-
 router.post('/removeItem', function(req,res){
 	db = createMySQLConnection();
 	db.connect(function(err) {
@@ -652,7 +638,6 @@ router.post('/removeItem', function(req,res){
 	resBasket(res, userID);
 	});
 });
-
 router.post('/checkout', function(req,res){
 	db = createMySQLConnection();
 	db.connect(function(err) {
@@ -671,9 +656,8 @@ router.post('/checkout', function(req,res){
 	basketToOrders();
 	sqlNoReturnQuery(sqlDeleteStatement);
 	resManagement(res, userID);
-	//});
+	});
 });
-
 router.post('/newListing', function(req, res){
 	db = createMySQLConnection();
 	db.connect(function(err) {
@@ -729,7 +713,6 @@ router.post('/newListing', function(req, res){
 	*/
 	//var selectSQL = "INSERT 
 });
-
 function basketToOrders(){
 	db = createMySQLConnection();
 	db.connect(function(err) {
@@ -745,13 +728,12 @@ function basketToOrders(){
 	db.query(sql, function(error, results, fields){
 		console.log(error);
 		console.log(results);
-		var sql = "INSERT INTO Order(PurchaserID, SellerID, ProductID, OrderState
+		//var sql = "INSERT INTO Order(PurchaserID, SellerID, ProductID, OrderState, isOpen) Values(" mysql.escape(userID) +","+ mysql.escape() +","+ mysql.escape() +","+ mysql.escape() +","+ mysql.escape(1) + ");"
 		for(var i = 0 ; i < results[0].COUNT(UserID); i++){
 			sqlNoReturnQuery();
 		}
 	});
 }
-
 function sqlNoReturnQuery(sql){
 	db = createMySQLConnection();
 	db.connect(function(err) {
@@ -766,7 +748,6 @@ function sqlNoReturnQuery(sql){
 		console.log(error);
 	});
 }
-
 function resWithUploadDetails(res,productName,price,productDescription,condition,brand,type,size,colour,material,sex){
 	res.render('uploads', {
 	productName: productName
@@ -781,7 +762,6 @@ function resWithUploadDetails(res,productName,price,productDescription,condition
 	,sex: sex
 	});
 }
-
 function resBasket(res,userID){
 	db = createMySQLConnection();
 	db.connect(function(err) {
@@ -819,7 +799,6 @@ function resBasket(res,userID){
 		});
 	})
 }
-
 function resManagement(res,userID){
 	db = createMySQLConnection();
 	db.connect(function(err) {
@@ -844,7 +823,6 @@ function resManagement(res,userID){
 		});
 	});
 }
-
 function resListings(res,userID){
 	db = createMySQLConnection();
 	db.connect(function(err) {
@@ -866,7 +844,6 @@ function resListings(res,userID){
 		});
 	});
 }
-
 function checkforEmpty(res,a,b,c,d,e,f,g,h,i,j){
 	if(a==""|| null){
 		return false;
@@ -900,7 +877,6 @@ function checkforEmpty(res,a,b,c,d,e,f,g,h,i,j){
 	}
 	return true;
 }
-
 function getRndInteger(min, max) {
   return Math.floor(Math.random() * (max - min) ) + min;
 }
