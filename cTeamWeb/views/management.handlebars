@@ -22,11 +22,11 @@
             <td><img class="resize" src="/Image/{{this.CoverImageID}}.png"></td> <!-- Not actually blob actually a file path -->
 			<td>&nbsp;{{this.Name}}&nbsp;</td>
             <td>&nbsp;£{{this.Price}}&nbsp;</td>
-            <td>&nbsp;{{this.State}}&nbsp;</td>
+            <td>&nbsp;{{this.OrderState}}&nbsp;</td>
 			<td>
-				<form action="/users/statusUpdate" method="POST">
+				<form action="/users/orderStatusUpdate" method="POST">
 					<input name="ProductID" type="hidden" value="{{this.ListingID}}"></input>
-					<input name="remove" type="image" src="https://i.imgur.com/h1ldGRr.png">
+					<input type="submit" value="{{this.ButtonValue}}">
 				</form>
 			</td>
 		  </tr>	
@@ -62,10 +62,11 @@
             <td><img class="resize" src="{{this.ImageBlob}}"></td> <!-- Not actually blob actually a file path -->
 			<td>{{this.Name}}</td>
             <td>£{{this.Price}}</td>
+            <td>&nbsp;{{this.OrderState}}&nbsp;</td>
 			<td>
-				<form action="/users/removeItem" method="POST">
+				<form action="/users/salesStatusUpdate" method="POST">
 					<input name="ProductID" type="hidden" value="{{this.ListingID}}"></input>
-					<input name="remove" type="image" src="https://i.imgur.com/h1ldGRr.png">
+					<input type="submit" value="{{this.ButtonValue}}">
 				</form>
 			</td>
 		  </tr>	

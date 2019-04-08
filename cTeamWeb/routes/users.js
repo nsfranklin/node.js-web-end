@@ -6,7 +6,7 @@ var mysql = require('mysql');
 var fs = require('fs');
 var bcrypt = require('bcryptjs');
 var app = express();
-var userID = 37;
+var userID = 9;
 var d = new Date();
 
 //Connect to Mysql db
@@ -457,6 +457,12 @@ router.get('/management', function(req, res){
 router.get('/listings', function(req, res){
 	resListings(res,userID);
 });
+router.get('/product', function(req, res){
+	res.render('product');
+});
+router.get('/order', function(req, res){
+	res.render('order');
+});
 router.post('/login', passport.authenticate('local-login', {
   successRedirect: '/',
   failureRedirect: '/login',
@@ -713,6 +719,15 @@ router.post('/newListing', function(req, res){
 	*/
 	//var selectSQL = "INSERT 
 });
+router.post('/updateListing', function(req,res){
+	
+});
+router.post('/orderStatusUpdate', function(req,res){
+	
+}
+router.post('/salesStatusUpdate', function(req,res){
+	
+});
 function basketToOrders(){
 	db = createMySQLConnection();
 	db.connect(function(err) {
@@ -809,12 +824,39 @@ function resManagement(res,userID){
 		console.log('Mysql Connected');
 	  }
 	});
-	var sql1 = "SELECT Product.ListingID, Product.Name, Product.CoverImageID, Price, State FROM `cTeamTeamProjectDatabase`.`Order`, Product WHERE Product.ListingID = Order.ProductID AND PurchaserID =" + mysql.escape(userID) + ";";  //selects users orders
-	var sql2 = "SELECT Product.ListingID, Product.Name, Product.CoverImageID, Price, State FROM `cTeamTeamProjectDatabase`.`Order`, Product WHERE Product.ListingID = Order.ProductID AND Order.SellerID =" + mysql.escape(userID) + ";"; //selects users sales
+	var sql1 = "SELECT Product.ListingID, Product.Name, Product.CoverImageID, Price, OrderState FROM `cTeamTeamProjectDatabase`.`Order`, Product WHERE Product.ListingID = Order.ProductID AND PurchaserID =" + mysql.escape(userID) + ";";  //selects users orders
+	var sql2 = "SELECT Product.ListingID, Product.Name, Product.CoverImageID, Price, OrderState FROM `cTeamTeamProjectDatabase`.`Order`, Product WHERE Product.ListingID = Order.ProductID AND Order.SellerID =" + mysql.escape(userID) + ";"; //selects users sales
 	var sql = sql1.toString() + sql2.toString();
 	console.log(sql);
 	db.query(sql, function(err, results, fields){
-	
+		for(var i = 0 ; i < results[0].length ; i++){
+			if (typeof results[0][i].OrderState !== 'undefined'){
+				results[0][i].OrderState = "paid";
+			}
+			if(results[0][i].OrderState == "paid"){
+				results[0][i].ButtonValue = "Mark As Dispatched";
+			}
+			if(results[0][i].OrderState == "arrived"){
+				results[0][i].ButtonValue = "Close Order";
+			}
+			if(results[0][i].OrderState == "dispatched"){
+				results[0][i].ButtonValue = "Waiting On Buy Response";
+			}
+		}
+		for(var j = 0 ; j < results[1].length ; j++){
+			if (typeof OrderState !== 'undefined'){
+				results[1][j].OrderState = "paid";
+			}
+			if(results[1][j].OrderState == "paid"){
+				results[1][j].ButtonValue = "Waiting For Dispatched Confirmation";
+			}
+			if(results[1][j].OrderState == "arrived"){
+				results[1][j].ButtonValue = "Close Order";
+			}
+			if(results[1][j].OrderState == "dispatched"){
+				results[1][j].ButtonValue = "Mark as Arrived";
+			}
+		}
 		console.log(err);
 		console.log(results);
 		res.render('management',{
@@ -836,7 +878,14 @@ function resListings(res,userID){
 	var sql = "SELECT Product.ListingID, Product.Name, Product.CoverImageID, Price, State FROM Product WHERE SellerID=" + mysql.escape(userID) + ";";  //selects users orders
 	console.log(sql);
 	db.query(sql, function(err, results, fields){
-	
+		for(var i = 0 ; i < results.length ; i++){
+			if(results[i].State == "available" || results[i].State == "failed" || results[i].State == "pending"){
+				results[i].ButtonValue =  "Delete Listing";
+			}
+			if(results[i].State == 'arrived'){
+				results[i].ButtonValue = "Close Listing ";
+			}
+		}
 		console.log(err);
 		console.log(results);
 		res.render('listings',{
@@ -898,7 +947,6 @@ function getCurrentDate(){
 	console.log(result);
 	return result;
 }
-
 module.exports = function(passport) {
  passport.serializeUser(function(user, done){
   done(null, user.id);
