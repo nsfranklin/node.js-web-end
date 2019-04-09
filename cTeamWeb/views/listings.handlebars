@@ -12,6 +12,7 @@
             <th class="second">Price</th>
             <th class="third">Status</th>
             <th class="forth">&nbsp;</th>
+			<th class="firth">&nbsp;</th>
           </tr>
         </thead>
 		{{/if}}
@@ -22,9 +23,15 @@
             <td>&nbsp;£{{this.Price}}&nbsp;</td>
 			<td>&nbsp;{{this.State}}&nbsp;</td>
 			<td>
+				<form action="/users/openDetails" method="POST">
+					<input name="ProductID" type="hidden" value="{{this.ListingID}}"></input>
+					<input name="submit" type="submit" value="View Listing Details">
+				</form>
+			</td>
+			<td>
 				<form action="/users/updateListing" method="POST">
 					<input name="ProductID" type="hidden" value="{{this.ListingID}}"></input>
-					<input name="submit" type="button" value="{{this.ButtonValue}}">
+					<input name="submit" type="submit" value="{{this.ButtonValue}}">
 				</form>
 			</td>
 		  </tr>	

@@ -6,7 +6,7 @@ var mysql = require('mysql');
 var fs = require('fs');
 var bcrypt = require('bcryptjs');
 var app = express();
-var userID = 37;
+var userID = 9;
 var d = new Date();
 
 //Connect to Mysql db
@@ -728,6 +728,15 @@ router.post('/orderStatusUpdate', function(req,res){
 router.post('/salesStatusUpdate', function(req,res){
 	
 });
+router.post('/openDetails', function(req, res){
+	res.render('viewListing');
+});
+router.post('/viewSale', function(req, res){
+	res.render('viewSale');
+});
+router.post('/viewOrder', function(req, res){
+	res.render('viewOrder');
+});
 function basketToOrders(){
 	db = createMySQLConnection();
 	db.connect(function(err) {
@@ -794,7 +803,7 @@ function resBasket(res,userID){
 		console.log(sql);
 		console.log(results);
 		console.log(error);
-		var imageBuffer;//request.file.buffer;
+		var imageBuffer;
 		var imageName = 'public/Image/';
 		var imageReturnedName = '/Image/';
 		var imagePath = imageName;
@@ -830,31 +839,40 @@ function resManagement(res,userID){
 	console.log(sql);
 	db.query(sql, function(err, results, fields){
 		for(var i = 0 ; i < results[0].length ; i++){
-			if (typeof results[0][i].OrderState === 'undefined'){
+			if(!fs.existsSync('public/Image/' + results[0][i].CoverImageID + ".png")){
+				imageEncode(results[0][i].CoverImageID);
+				console.log("unfound image");
+			}
+			if (results[0][i].OrderState === 'undefined'){
 				results[0][i].OrderState = "paid";
 			}
 			if(results[0][i].OrderState == "paid"){
-				results[0][i].ButtonValue = "value=\"Mark As Dispatched\"";
+				results[0][i].ButtonValue = "value=\"Waiting For Dispatched\" disabled";
 			}
 			if(results[0][i].OrderState == "arrived"){
 				results[0][i].ButtonValue = "value=\"Close Order\"";
 			}
 			if(results[0][i].OrderState == "dispatched"){
-				results[0][i].ButtonValue = "value=\"Waiting On Buy Response\" disabled";
+				results[0][i].ButtonValue = "value=\"Mark as Arrived\"";
 			}
+			
 		}
 		for(var j = 0 ; j < results[1].length ; j++){
-			if (typeof results[1].OrderState === 'undefined'){
+			if(!fs.existsSync('public/Image/' + results[1][j].CoverImageID + ".png")){
+				imageEncode(results[1][j].CoverImageID);
+				console.log("unfound image");
+			}
+			if (results[1][j].OrderState === 'undefined'){
 				results[1][j].OrderState = "paid";
 			}
 			if(results[1][j].OrderState == "paid"){
-				results[1][j].ButtonValue = "value=\"Waiting For Dispatched\" disabled";
+				results[1][j].ButtonValue = "value=\"Mark As Dispatched\"";
 			}
 			if(results[1][j].OrderState == "arrived"){
 				results[1][j].ButtonValue = "value=\"Close Order\"";
 			}
 			if(results[1][j].OrderState == "dispatched"){
-				results[1][j].ButtonValue = "value=\"Mark as Arrived\"";
+				results[1][j].ButtonValue = "value=\"Waiting On Buy Response\" disabled";
 			}
 		}
 		console.log(err);
@@ -892,6 +910,42 @@ function resListings(res,userID){
 			listings: results
 		});
 	});
+}
+async function encodeImageFromDatabase(CoverImageID){
+	return new Promise((resolve, reject) => {
+		console.log("Encoding Images");
+		db = createMySQLConnection();
+		db.connect(function(err) {
+		  if (err) {
+			console.log('Mysql Connection error:', err);
+		  }
+		  else{
+			console.log('Mysql Connected');
+		  }
+		});
+		var sql = "Select ImageBlob From Image Where ImageID =" + mysql.escape(CoverImageID);
+		db.query(sql, function(error, results, fields){
+			console.log(sql);
+			console.log(results);
+			console.log(error);
+			var imageBuffer;
+			var imageName = 'public/Image/';
+			var imagePath = imageName;
+			for(var i = 0 ; i < results.length ; i++){
+				imageBuffer = results[i].ImageBlob;
+				imagePath = imageName + CoverImageID + ".png";
+				if(!fs.existsSync(imagePath)){
+					fs.createWriteStream(imagePath).write(imageBuffer);
+				}
+				console.log(results);
+			}
+		});
+		console.log("about to resolve");
+		resolve('resolving');
+	});
+}
+async function imageEncode(CoverImageID){
+	var a = await encodeImageFromDatabase(CoverImageID)
 }
 function checkforEmpty(res,a,b,c,d,e,f,g,h,i,j){
 	if(a==""|| null){
