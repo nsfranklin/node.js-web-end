@@ -6,7 +6,7 @@ var mysql = require('mysql');
 var fs = require('fs');
 var bcrypt = require('bcryptjs');
 var app = express();
-var userID = 9;
+var userID = 37;
 var d = new Date();
 
 //Connect to Mysql db
@@ -724,7 +724,7 @@ router.post('/updateListing', function(req,res){
 });
 router.post('/orderStatusUpdate', function(req,res){
 	
-}
+});
 router.post('/salesStatusUpdate', function(req,res){
 	
 });
@@ -830,31 +830,31 @@ function resManagement(res,userID){
 	console.log(sql);
 	db.query(sql, function(err, results, fields){
 		for(var i = 0 ; i < results[0].length ; i++){
-			if (typeof results[0][i].OrderState !== 'undefined'){
+			if (typeof results[0][i].OrderState === 'undefined'){
 				results[0][i].OrderState = "paid";
 			}
 			if(results[0][i].OrderState == "paid"){
-				results[0][i].ButtonValue = "Mark As Dispatched";
+				results[0][i].ButtonValue = "value=\"Mark As Dispatched\"";
 			}
 			if(results[0][i].OrderState == "arrived"){
-				results[0][i].ButtonValue = "Close Order";
+				results[0][i].ButtonValue = "value=\"Close Order\"";
 			}
 			if(results[0][i].OrderState == "dispatched"){
-				results[0][i].ButtonValue = "Waiting On Buy Response";
+				results[0][i].ButtonValue = "value=\"Waiting On Buy Response\" disabled";
 			}
 		}
 		for(var j = 0 ; j < results[1].length ; j++){
-			if (typeof OrderState !== 'undefined'){
+			if (typeof results[1].OrderState === 'undefined'){
 				results[1][j].OrderState = "paid";
 			}
 			if(results[1][j].OrderState == "paid"){
-				results[1][j].ButtonValue = "Waiting For Dispatched Confirmation";
+				results[1][j].ButtonValue = "value=\"Waiting For Dispatched\" disabled";
 			}
 			if(results[1][j].OrderState == "arrived"){
-				results[1][j].ButtonValue = "Close Order";
+				results[1][j].ButtonValue = "value=\"Close Order\"";
 			}
 			if(results[1][j].OrderState == "dispatched"){
-				results[1][j].ButtonValue = "Mark as Arrived";
+				results[1][j].ButtonValue = "value=\"Mark as Arrived\"";
 			}
 		}
 		console.log(err);
