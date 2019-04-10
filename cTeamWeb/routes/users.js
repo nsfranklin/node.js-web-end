@@ -656,7 +656,7 @@ router.post('/checkout', function(req,res){
 	});
 	app.use(express.urlencoded());
 	var ProductID = req.body.ProductID;
-	var sql = "UPDATE Product SET State=" + mysql.escape("ordered") + " WHERE Product.ListingID = (SELECT Product.ListingID From Basket, Product, Image Where Basket.UserID =" + mysql.escape(userID) + " AND Basket.ProductID = Product.ListingID);" ;
+	//var sql = "UPDATE Product SET State=" + mysql.escape("ordered") + " WHERE Product.ListingID = (SELECT Product.ListingID From Basket, Product, Image Where Basket.UserID =" + mysql.escape(userID) + " AND Basket.ProductID = Product.ListingID);" ;
 	var sqlDeleteStatement = "DELETE FROM Basket WHERE Basket.UserID =" + mysql.escape(userID);
 	db.query(sql, function(error, results, fields){
 	basketToOrders();
@@ -836,7 +836,7 @@ function basketToOrders(){
 	db.query(sql, function(error, results, fields){
 		console.log(error);
 		console.log(results);
-		//var sql = "INSERT INTO Order(PurchaserID, SellerID, ProductID, OrderState, isOpen) Values(" mysql.escape(userID) +","+ mysql.escape() +","+ mysql.escape() +","+ mysql.escape() +","+ mysql.escape(1) + ");"
+		var sql = "INSERT INTO Order(PurchaserID, SellerID, ProductID, OrderState, isOpen) Values(" mysql.escape(userID) +","+ mysql.escape() +","+ mysql.escape() +","+ mysql.escape() +","+ mysql.escape(1) + ");"
 		for(var i = 0 ; i < results[0].COUNT(UserID); i++){
 			sqlNoReturnQuery();
 		}
@@ -1067,8 +1067,6 @@ function checkforEmpty(res,a,b,c,d,e,f,g,h,i,j){
 function getRndInteger(min, max) {
   return Math.floor(Math.random() * (max - min) ) + min;
 }
-/****************************************************************************************/
-
 function getCurrentDate(){
 	var result;
 	var month = d.getMonth() + 1;
