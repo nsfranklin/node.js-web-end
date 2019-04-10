@@ -25,12 +25,14 @@
             <td>&nbsp;{{this.OrderState}}&nbsp;</td>
 			<td>
 				<form action="/users/viewOrder" method="POST">
+					<input name="Status" type="hidden" value="{{this.OrderState}}"></input>
 					<input name="ProductID" type="hidden" value="{{this.ListingID}}"></input>
 					<input type="submit" value="View Order Details"></input>
 				</form>
 			</td>
 			<td>
 				<form action="/users/orderStatusUpdate" method="POST">
+					<input name="Status" type="hidden" value="{{this.OrderState}}"></input>
 					<input name="ProductID" type="hidden" value="{{this.ListingID}}"></input>
 					<input type="submit" {{{this.ButtonValue}}}></input>
 				</form>
@@ -72,12 +74,14 @@
             <td>&nbsp;{{this.OrderState}}&nbsp;</td>
 			<td>
 				<form action="/users/viewSale" method="POST">
+					<input name="Status" type="hidden" value="{{this.OrderState}}"></input>
 					<input name="ProductID" type="hidden" value="{{this.ListingID}}"></input>
 					<input type="submit" value="View Sales Details"></input>
 				</form>
 			</td>
 			<td>
 				<form action="/users/salesStatusUpdate" method="POST">
+					<input name="Status" type="hidden" value="{{this.OrderState}}"></input>
 					<input name="ProductID" type="hidden" value="{{this.ListingID}}"></input>
 					<input type="submit" {{{this.ButtonValue}}}></input>
 				</form>

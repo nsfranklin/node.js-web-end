@@ -720,13 +720,97 @@ router.post('/newListing', function(req, res){
 	//var selectSQL = "INSERT 
 });
 router.post('/updateListing', function(req,res){
-	
+	app.use(express.urlencoded());
+	var listingID = req.body.ProductID;
+	db = createMySQLConnection();
+	db.connect(function(err) {
+	  if (err) {
+		console.log('Mysql Connection error:', err);
+	  }
+	  else{
+		console.log('Mysql Connected');
+	  }
+	});
+	//var sql = "DELETE FROM Product WHERE ListingID =" + mysql.escape(listingID);
+	//console.log(sql);
+	//db.query(sql, function(error, results, fields){
+	//	console.log(error);
+	//	resListings(res, userID);
+	//})
+	console.log("Delecting Items Currently Disabled");
+	resListings(res, userID);
 });
 router.post('/orderStatusUpdate', function(req,res){
+	app.use(express.urlencoded());
+	var listingID = req.body.ProductID;
+	db = createMySQLConnection();
+	db.connect(function(err) {
+	  if (err) {
+		console.log('Mysql Connection error:', err);
+	  }
+	  else{
+		console.log('Mysql Connected');
+	  }
+	});
+	var listingID = req.body.ProductID;
+	var Status = req.body.Status;
+	var sql = "-1";
 	
+	if(Status = "paid"){
+		sql = "UPDATE cTeamTeamProjectDatabase.Order Set isOpen = 1 , OrderState =" + mysql.escape("dispatched") + " WHERE ProductID =" + mysql.escape(listingID);
+	}else if(Status = "dispatched"){
+		sql = "UPDATE cTeamTeamProjectDatabase.Order Set isOpen = 1 , OrderState =" + mysql.escape("arrived") + " WHERE ProductID =" + mysql.escape(listingID);
+	}else if(Status = "arrived"){
+		sql = "UPDATE cTeamTeamProjectDatabase.Order Set isOpen = 0 , OrderState =" + mysql.escape("closed") + " WHERE ProductID =" + mysql.escape(listingID);
+	}
+	
+	if(sql == "-1"){
+		resManagement(res, userID);
+	}else{
+		console.log("updated");
+		db.query(sql, function(error, results, fields){
+			console.log(sql);
+			console.log(error);
+			resManagement(res, userID);
+		});
+	}
+	console.log("Updated Order");
 });
 router.post('/salesStatusUpdate', function(req,res){
+	app.use(express.urlencoded());
+	var listingID = req.body.ProductID;
+	db = createMySQLConnection();
+	db.connect(function(err) {
+	  if (err) {
+		console.log('Mysql Connection error:', err);
+	  }
+	  else{
+		console.log('Mysql Connected');
+	  }
+	});
+	var listingID = req.body.ProductID;
+	var Status = req.body.Status;
+	var sql = "-1";
 	
+	if(Status = "paid"){
+		sql = "UPDATE cTeamTeamProjectDatabase.Order Set isOpen = 1 , OrderState =" + mysql.escape("dispatched") + " WHERE ProductID =" + mysql.escape(listingID);
+	}else if(Status = "dispatched"){
+		sql = "UPDATE cTeamTeamProjectDatabase.Order Set isOpen = 1 , OrderState =" + mysql.escape("arrived") + " WHERE ProductID =" + mysql.escape(listingID);
+	}else if(Status = "arrived"){
+		sql = "UPDATE cTeamTeamProjectDatabase.Order Set isOpen = 0 , OrderState =" + mysql.escape("closed") + " WHERE ProductID =" + mysql.escape(listingID);
+	}
+	
+	if(sql == "-1"){
+		resManagement(res, userID);
+	}else{
+		console.log("updated");
+		db.query(sql, function(error, results, fields){
+			console.log(sql);
+			console.log(error);
+			resManagement(res, userID);
+		});
+	}
+	console.log("Updated Listing");
 });
 router.post('/openDetails', function(req, res){
 	res.render('viewListing');
@@ -890,11 +974,11 @@ function resListings(res,userID){
 		console.log('Mysql Connection error:', err);
 	  }
 	  else{
-		console.log('Mysql Connected');
+		//console.log('Mysql Connected');
 	  }
 	});
 	var sql = "SELECT Product.ListingID, Product.Name, Product.CoverImageID, Price, State FROM Product WHERE SellerID=" + mysql.escape(userID) + ";";  //selects users orders
-	console.log(sql);
+	//console.log(sql);
 	db.query(sql, function(err, results, fields){
 		for(var i = 0 ; i < results.length ; i++){
 			if(results[i].State == "available" || results[i].State == "failed" || results[i].State == "pending"){
@@ -904,8 +988,8 @@ function resListings(res,userID){
 				results[i].ButtonValue = "Close Listing ";
 			}
 		}
-		console.log(err);
-		console.log(results);
+		//console.log(err);
+		//console.log(results);
 		res.render('listings',{
 			listings: results
 		});
