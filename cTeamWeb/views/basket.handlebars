@@ -31,6 +31,14 @@
 		{{else}}
 			<h3>Cart Empty</h3>
 		{{/each}}
+		{{#if basketItem.length}}
+		<tr>
+            <th class="first"></th>
+            <th class="third"></th>
+            <th class="forth">Total:&nbsp;&nbsp;£{{subtotal}}</th>
+		    <th class="second"></th>
+          </tr>
+		{{/if}}
         </tbody>
       </table></br>
 	  {{#if basketItem.length}}
@@ -38,6 +46,5 @@
 		<input type="submit" value="Checkout">
 	  </form>
 	  {{/if}}
-	  <h5 type="text" value="Sub-Total: {{subtotal}}"></h5>
     </div>
   </div>

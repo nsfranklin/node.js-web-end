@@ -892,7 +892,9 @@ function resBasket(res,userID){
 		var imageReturnedName = '/Image/';
 		var imagePath = imageName;
 		var imageReturnedPath = imageReturnedName;
+		var total = 0;
 		for(var i = 0 ; i < results.length ; i++){
+			total = total + results[i].Price;
 			imageBuffer = results[i].ImageBlob;
 			imagePath = imageName + results[i].ImageID + ".png";
 			imageReturnedPath = imageReturnedName + results[i].ImageID + ".png";
@@ -904,7 +906,7 @@ function resBasket(res,userID){
 		}
 		res.render('basket', {
 			basketItem: results,
-			subtotal: 3
+			subtotal: total.toFixed(2)
 		});
 	})
 }
