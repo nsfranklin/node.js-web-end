@@ -6,7 +6,7 @@ var mysql = require('mysql');
 var fs = require('fs');
 var bcrypt = require('bcryptjs');
 var app = express();
-var userID = 9;
+var userID = 37;
 var d = new Date();
 
 //Connect to Mysql db
@@ -836,7 +836,7 @@ function basketToOrders(){
 	db.query(sql, function(error, results, fields){
 		console.log(error);
 		console.log(results);
-		var sql = "INSERT INTO Order(PurchaserID, SellerID, ProductID, OrderState, isOpen) Values(" mysql.escape(userID) +","+ mysql.escape() +","+ mysql.escape() +","+ mysql.escape() +","+ mysql.escape(1) + ");"
+		//var sql = "INSERT INTO Order(PurchaserID, SellerID, ProductID, OrderState, isOpen) Values(" mysql.escape(userID) +","+ mysql.escape() +","+ mysql.escape() +","+ mysql.escape() +","+ mysql.escape(1) + ");"
 		for(var i = 0 ; i < results[0].COUNT(UserID); i++){
 			sqlNoReturnQuery();
 		}
@@ -903,7 +903,8 @@ function resBasket(res,userID){
 			console.log(results);
 		}
 		res.render('basket', {
-			basketItem: results
+			basketItem: results,
+			subtotal: 3
 		});
 	})
 }
