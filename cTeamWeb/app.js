@@ -11,76 +11,6 @@ var LocalStrategy = require('passport-local').Strategy;
 var fs = require('fs');
 var mysql = require('mysql');
 
-/*
-//Connect to Mysql db
-var db = mysql.createConnection({
-  host     : 'cteamteamprojectdatabase.csed5aholavi.eu-west-2.rds.amazonaws.com',
-  user     : 'nodeserver',
-  password : '54Tjltl9LgSWHxrx2AVo',
- // database : 'cTeamTeamProjectDatabase'
-   ssl  : {
-    ca : fs.readFileSync(__dirname + '/ca/rds-combined-ca-bundle.pem' )
-  }
-});
-
-
-db.connect(function(err) {
-  if (err) {
-    console.log('Mysql Connection error:', err);
-  }
-  else{
-  	console.log('Mysql Connected');
-  }
-  
-});
-
-db.query('SELECT * FROM cTeamTeamProjectDatabase.Users', function (err, result) {
-    if (err){
-    	console.log(err);
-    }
-    else{
-    	console.log(result);
-    }
-
-    });
-*/
-/*
-
-var resultDB; 
-
-var fieldsDB;
-
-var errDB;
-
-var users = "nsfranklin";
-
-db.connect(function(errDB) {
-  if (errDB) throw errDB;
-  db.query('SELECT * FROM cTeamTeamProjectDatabase.Orders', function (errDB, resultDB) {
-    if (errDB);
-    console.log(errDB);
-  });
-});
-
-app.get("/",function(req,res){
-connection.query('SELECT * from user LIMIT 2', function(err, rows, fields) {
-connection.end();
-  if (!err)
-    console.log('The solution is: ', rows);
-  else
-    console.log('Error while performing Query.');
-  });
-});
-
-console.log(resultDB + "Results log");
-
-db.end(function(errDB) {
-  // The connection is terminated now
-});
-
-console.log("Closed Connection");
-
-*/
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -106,7 +36,7 @@ app.use(cookieParser());
 app.use(session({
     secret: 'secret',
     resave: true,
-    saveUninitialized: true
+    saveUninitialized: true,
 }));
 
 // Passport init

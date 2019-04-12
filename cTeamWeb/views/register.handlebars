@@ -1,4 +1,4 @@
-<div class="box1">
+<div class="box5">
 	<h1>Register</h1>
 	{{#if user}}
 			<div class="alert alert-danger">Username has taken already try new</div> 
@@ -21,9 +21,12 @@
 		<label>Email</label></br>
 		<input type="text" placeholder="Email" name="email" value="{{email}}">
 		<label>Password</label></br>
-		<input type="password" placeholder="Password" name="password">
+		<input type="password" placeholder="Password" name="password1">
 		<label>Confirm Password</label></br>
 		<input type="password" placeholder="Password" name="password2">
 		<input type="submit" ></input>
 	</form>
+	{{#if error.length}}
+				<h3>{{error}}</h3>
+	{{/if}}
 </div>

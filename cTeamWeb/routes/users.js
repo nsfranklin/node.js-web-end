@@ -8,9 +8,17 @@ var bcrypt = require('bcryptjs');
 var app = express();
 var userID = 37;
 var d = new Date();
-
+var session = require('express-session');
 //Connect to Mysql db
 var db;
+
+
+// Express Session
+app.use(session({
+    secret: 'secret',
+    resave: true,
+    saveUninitialized: true,
+}));
 
 function createMySQLConnection(){
 	  db = mysql.createConnection({
@@ -26,7 +34,11 @@ function createMySQLConnection(){
 
 //Settings
 router.get('/settings', function(req, res){ 
-	resWithSettingDetails(res);
+	if(req.session.userID){
+		resWithSettingDetails(res, req);
+	}else{
+		res.render('login', { hide: true });
+	}
 });
 var isoCountries = {
     'AF' : 'Afghanistan',
@@ -282,7 +294,7 @@ function getCountryName(countryCode) {
         return countryCode;
     }
 }
-function resWithSettingDetails(res){
+function resWithSettingDetails(res, req){
 	db = createMySQLConnection();
 	db.connect(function(err) {
 	  if (err) {
@@ -292,9 +304,9 @@ function resWithSettingDetails(res){
 		console.log('Mysql Connected');
 	  }
 	});
-	var sql1 = "SELECT Email FROM Users WHERE UserID =" + mysql.escape(2) + ";";
-	var sql2 = " SELECT SensorSize, FocusLength FROM CameraDetails WHERE UserID=" + mysql.escape(2) + " LIMIT 1;";
-	var sql3 = " SELECT FirstName, LastName, AddressNum, AddressLine, City, PostalCode, Country, AddressType FROM Address WHERE UserID=" + mysql.escape(2) ;
+	var sql1 = "SELECT Email FROM Users WHERE UserID =" + mysql.escape(req.session.userID) + ";";
+	var sql2 = " SELECT SensorSize, FocusLength FROM CameraDetails WHERE UserID=" + mysql.escape(req.session.userID) + " LIMIT 1;";
+	var sql3 = " SELECT FirstName, LastName, AddressNum, AddressLine, City, PostalCode, Country, AddressType FROM Address WHERE UserID=" + mysql.escape(req.session.userID) ;
 	var sql = sql1.toString() + sql2.toString() + sql3.toString();
 	console.log(sql);
 	db.query(sql, function(err, results, fields){
@@ -437,49 +449,112 @@ function resWithSettingDetails(res){
 }	
 //Basket
 router.get('/basket', function(req, res){ 
-	resBasket(res, userID); 
+	if(req.session.userID){
+		console.log("basket of user: " + req.session.userID);
+		resBasket(res, req); 
+	}else{
+		res.render('login', { hide: true }); 
+	}
 });
 //Image upolads
 router.get('/uploads', function(req, res){ 
-  res.render('uploads'); 
+	if(req.session.userID){
+		res.render('uploads');
+	}else{
+		res.render('login', { hide: true });
+	}
 });
 //Register 
 router.get('/register', function(req, res){ 
-	res.render('register'); 
+	res.render('register', {hide: true} );
 });
 //Login
-router.get('/login', function(req, res){ 
-	res.render('login'); 
+router.get('/login', function(req, res){
+	res.render('login', {
+		hide: true
+	}); 
 });
 router.get('/management', function(req, res){
-	resManagement(res,userID);
+	if(req.session.userID){
+		resManagement(res,req);
+	}else{
+		res.render('login', { hide: true });
+	}
 });
 router.get('/listings', function(req, res){
-	resListings(res,userID);
+	if(req.session.userID){
+		resListings(res,req);
+	}else{
+		res.render('login', { hide: true });
+	}
 });
 router.get('/product', function(req, res){
-	res.render('product');
+	if(req.session.userID){
+		res.render('product');
+	}else{
+		res.render('login', { hide: true });
+	}
 });
 router.get('/order', function(req, res){
-	res.render('order');
+	if(req.session.userID){
+		res.render('order');
+	}else{
+		res.render('login', { hide: true });
+	}
 });
-router.post('/login', passport.authenticate('local-login', {
-  successRedirect: '/',
-  failureRedirect: '/login',
-  failureFlash: true
- }),
-function(req, res){
-   if(req.body.remember){
-    req.session.cookie.maxAge = 1000 * 60 * 3;
-   }else{
-    req.session.cookie.expires = false;
-   }
-   res.redirect('/');
-  });
-router.post('/register', passport.authenticate('reg', {
-	successRedirect:'/login',
-	failureRedirect:'/register',
-	failureFlash: true
+router.post('/login', function(req, res){
+	app.use(express.urlencoded());
+	username = req.body.username;
+	req.session.user;
+	findUser(username, function(result){
+			if(result){
+				req.session.userID = result;
+				resListings(res, req);
+			}else{
+				res.render('login', {
+					error: 'Unknown Username or Password'
+				});
+			}
+	});
+});
+router.post('/register', function(req, res){
+	db = createMySQLConnection();
+	db.connect(function(err) {
+	  if (err) {
+		console.log('Mysql Connection error:', err);
+	  }
+	  else{
+		console.log('Mysql Connected');
+	  }
+	  
+	});
+	app.use(express.urlencoded());
+	
+	var firstName = req.body.firstname;
+	var surname = req.body.surname;
+	var username = req.body.username;
+	var email = req.body.email;
+	var pass1 = req.body.password1;
+	var pass2 = req.body.password2
+	
+	if(checkRegisterValues(firstName,surname,username,email,pass1,pass2)){
+		const regex = /\S+@\S+/
+		var usableEmail = false;
+		if(email !== undefined){
+		usableEmail = regex.test(String(email).toLowerCase())
+		console.log("Valid Email Result: " + usableEmail);
+		}
+		if(usableEmail){
+			
+		}else{
+			
+		}
+	}else{
+		
+	}
+	
+	
+	
 }));
 router.post('/email', function(req, res){
 	db = createMySQLConnection();
@@ -500,7 +575,7 @@ router.post('/email', function(req, res){
 		console.log("Valid Email Result: " + usableEmail);
 	}
 	if(usableEmail){
-		var SQL = "UPDATE Users Set Email="+ mysql.escape(email) + " WHERE UserID =" + mysql.escape(2); //User 2 is the test user.
+		var SQL = "UPDATE Users Set Email="+ mysql.escape(email) + " WHERE UserID =" + mysql.escape(req.session.userID);
 		db.query(SQL , function(error,results,fields){	
 			resWithSettingDetails(res);
 			db.end();
@@ -521,7 +596,7 @@ router.post('/password', function(req, res){
 	  
 	});
 	app.use(express.urlencoded());
-	var selectSQL = "SELECT CameraID FROM CameraDetails WHERE UserID =" + mysql.escape(2); //User 2 is the test user.
+	var selectSQL = "SELECT CameraID FROM CameraDetails WHERE UserID =" + mysql.escape(req.session.userID);
 	var cameraID;
 	db.query(selectSQL , function(error,results,fields){	
 		resWithSettingDetails(res);
@@ -540,7 +615,7 @@ router.post('/cameraSetting', function(req, res){
 	  
 	});
 	app.use(express.urlencoded());
-	var selectSQL = "SELECT CameraID FROM CameraDetails WHERE UserID =" + mysql.escape(2); //User 2 is the test user.
+	var selectSQL = "SELECT CameraID FROM CameraDetails WHERE UserID =" + mysql.escape(req.session.userID);
 	var cameraID;
 	db.query(selectSQL , function(error,results,fields){	
 		if(typeof results[0] !== 'undefined'){
@@ -558,7 +633,7 @@ router.post('/cameraSetting', function(req, res){
 				focusLength = null;
 			}
 			console.log("FocusLength int?: " + focusLength);
-			var sql = "UPDATE CameraDetails SET SensorSize="+ mysql.escape(sensorSize) +" , FocusLength=" + mysql.escape(focusLength) + " WHERE UserID=" + mysql.escape("2");
+			var sql = "UPDATE CameraDetails SET SensorSize="+ mysql.escape(sensorSize) +" , FocusLength=" + mysql.escape(focusLength) + " WHERE UserID=" + mysql.escape(req.session.userID);
 			console.log(sql);
 			db.query(sql);
 		}else{
@@ -575,11 +650,11 @@ router.post('/cameraSetting', function(req, res){
 				focusLength = null;
 			}
 			console.log("FocusLength int?: " + focusLength);
-			var sql = "INSERT INTO CameraDetails(SensorSize, FocusLength, UserID) VALUES(" + mysql.escape(sensorSize) + "," + mysql.escape(focusLength) + "," + mysql.escape(2) + ")"; 
+			var sql = "INSERT INTO CameraDetails(SensorSize, FocusLength, UserID) VALUES(" + mysql.escape(sensorSize) + "," + mysql.escape(focusLength) + "," + mysql.escape(req.session.userID) + ")"; 
 			console.log(sql);
 			db.query(sql)
 		}
-		resWithSettingDetails(res);
+		resWithSettingDetails(res, req);
 		db.end();
 	})
 });
@@ -595,7 +670,7 @@ router.post('/billing', function(req, res){
 	  
 	});
 	app.use(express.urlencoded());
-	var selectSQL = "SELECT CameraID FROM CameraDetails WHERE UserID =" + mysql.escape(2); //User 2 is the test user.
+	var selectSQL = "SELECT CameraID FROM CameraDetails WHERE UserID =" + mysql.escape(req.session.userID); 
 	var cameraID;
 	db.query(selectSQL , function(error,results,fields){	
 
@@ -615,7 +690,7 @@ router.post('/delivery', function(req, res){
 	  
 	});
 	app.use(express.urlencoded());
-	var selectSQL = "SELECT CameraID FROM CameraDetails WHERE UserID =" + mysql.escape(2); //User 2 is the test user.
+	var selectSQL = "SELECT CameraID FROM CameraDetails WHERE UserID =" + mysql.escape(req.session.userID); 
 	var cameraID;
 	db.query(selectSQL , function(error,results,fields){	
 
@@ -637,11 +712,11 @@ router.post('/removeItem', function(req,res){
 	});
 	app.use(express.urlencoded());
 	var ProductID = req.body.ProductID;
-	var sql = "DELETE FROM Basket WHERE UserID=" + mysql.escape(userID) + " AND " + "ProductID=" + mysql.escape(ProductID);
+	var sql = "DELETE FROM Basket WHERE UserID=" + mysql.escape(req.session.userID) + " AND " + "ProductID=" + mysql.escape(ProductID);
 	console.log(sql);
 	db.query(sql, function(error, results, fields){
 	console.log(error);
-	resBasket(res, userID);
+	resBasket(res, req);
 	});
 });
 router.post('/checkout', function(req,res){
@@ -657,11 +732,11 @@ router.post('/checkout', function(req,res){
 	app.use(express.urlencoded());
 	var ProductID = req.body.ProductID;
 	//var sql = "UPDATE Product SET State=" + mysql.escape("ordered") + " WHERE Product.ListingID = (SELECT Product.ListingID From Basket, Product, Image Where Basket.UserID =" + mysql.escape(userID) + " AND Basket.ProductID = Product.ListingID);" ;
-	var sqlDeleteStatement = "DELETE FROM Basket WHERE Basket.UserID =" + mysql.escape(userID);
+	var sqlDeleteStatement = "DELETE FROM Basket WHERE Basket.UserID =" + mysql.escape(req.session.userID);
 	db.query(sql, function(error, results, fields){
 	basketToOrders();
 	sqlNoReturnQuery(sqlDeleteStatement);
-	resManagement(res, userID);
+	resManagement(res, req);
 	});
 });
 router.post('/newListing', function(req, res){
@@ -698,7 +773,7 @@ router.post('/newListing', function(req, res){
 		var DateCreated = new Date().toISOString().slice(0, 19).replace('T', ' ');;
 		var CoverImageID = getRndInteger(1,100);
 		var colourName = "tempColour";//findColour();
-		var SQL = "INSERT INTO Product(SellerID,Price,`Product`.`Name`,Description,DateCreated,Pending,`Product`.`Condition`,Colour,Brand,`Product`.`Type`,Size,Material,Sex,State,CameraID,CoverImageID) VALUES(" + userID + "," + price + ",\"" + productName + "\",\"" + productDescription + "\",\"" + DateCreated + "\"," + pending + ",\"" + condition + "\",\"" + colourName + "\",\"" + brand + "\",\"" + type + "\"," + size + ",\"" + material + "\",\"" + sex + "\",\"" + state + "\"," + CameraID + ",\"" + CoverImageID + "\")";
+		var SQL = "INSERT INTO Product(SellerID,Price,`Product`.`Name`,Description,DateCreated,Pending,`Product`.`Condition`,Colour,Brand,`Product`.`Type`,Size,Material,Sex,State,CameraID,CoverImageID) VALUES(" + req.session.userID + "," + price + ",\"" + productName + "\",\"" + productDescription + "\",\"" + DateCreated + "\"," + pending + ",\"" + condition + "\",\"" + colourName + "\",\"" + brand + "\",\"" + type + "\"," + size + ",\"" + material + "\",\"" + sex + "\",\"" + state + "\"," + CameraID + ",\"" + CoverImageID + "\")";
 		db.query(SQL, function(error, results, fields){console.log(error)});
 		res.render('uploads');	
 	}else{
@@ -738,7 +813,7 @@ router.post('/updateListing', function(req,res){
 	//	resListings(res, userID);
 	//})
 	console.log("Delecting Items Currently Disabled");
-	resListings(res, userID);
+	resListings(res, req);
 });
 router.post('/orderStatusUpdate', function(req,res){
 	app.use(express.urlencoded());
@@ -765,13 +840,13 @@ router.post('/orderStatusUpdate', function(req,res){
 	}
 	
 	if(sql == "-1"){
-		resManagement(res, userID);
+		resManagement(res, req);
 	}else{
 		console.log("updated");
 		db.query(sql, function(error, results, fields){
 			console.log(sql);
 			console.log(error);
-			resManagement(res, userID);
+			resManagement(res, req);
 		});
 	}
 	console.log("Updated Order");
@@ -801,13 +876,13 @@ router.post('/salesStatusUpdate', function(req,res){
 	}
 	
 	if(sql == "-1"){
-		resManagement(res, userID);
+		resManagement(res, req);
 	}else{
 		console.log("updated");
 		db.query(sql, function(error, results, fields){
 			console.log(sql);
 			console.log(error);
-			resManagement(res, userID);
+			resManagement(res, req);
 		});
 	}
 	console.log("Updated Listing");
@@ -821,7 +896,7 @@ router.post('/viewSale', function(req, res){
 router.post('/viewOrder', function(req, res){
 	res.render('viewOrder');
 });
-function basketToOrders(){
+function basketToOrders(req){
 	db = createMySQLConnection();
 	db.connect(function(err) {
 	  if (err) {
@@ -831,7 +906,7 @@ function basketToOrders(){
 		console.log('Mysql Connected');
 	  }
 	});
-	var sql = "SELECT COUNT(UserID) FROM Basket WHERE Basket.UserID=" + mysql.escape(userID);
+	var sql = "SELECT COUNT(UserID) FROM Basket WHERE Basket.UserID=" + mysql.escape(req.session.userID);
 	console.log(sql);
 	db.query(sql, function(error, results, fields){
 		console.log(error);
@@ -870,7 +945,7 @@ function resWithUploadDetails(res,productName,price,productDescription,condition
 	,sex: sex
 	});
 }
-function resBasket(res,userID){
+function resBasket(res, req){
 	db = createMySQLConnection();
 	db.connect(function(err) {
 	  if (err) {
@@ -881,12 +956,12 @@ function resBasket(res,userID){
 	  }
 	});
 	app.use(express.urlencoded());
-	var sql = "Select Name, Price, ImageBlob, ImageID, Product.ListingID  From Basket, Product, Image Where Basket.UserID =" +mysql.escape(userID) + " AND Basket.ProductID = Product.ListingID AND Product.CoverImageID = Image.ImageID"
+	var sql = "Select Name, Price, ImageBlob, ImageID, Product.ListingID  From Basket, Product, Image Where Basket.UserID =" +mysql.escape(req.session.userID) + " AND Basket.ProductID = Product.ListingID AND Product.CoverImageID = Image.ImageID"
 	var results;
 	db.query(sql, function(error, results, fields){
-		console.log(sql);
-		console.log(results);
-		console.log(error);
+		//console.log(sql);
+		//console.log(results);
+		//console.log(error);
 		var imageBuffer;
 		var imageName = 'public/Image/';
 		var imageReturnedName = '/Image/';
@@ -902,7 +977,7 @@ function resBasket(res,userID){
 				fs.createWriteStream(imagePath).write(imageBuffer);
 			}
 			results[i].ImageBlob = imageReturnedPath;
-			console.log(results);
+			//console.log(results);
 		}
 		res.render('basket', {
 			basketItem: results,
@@ -910,7 +985,7 @@ function resBasket(res,userID){
 		});
 	})
 }
-function resManagement(res,userID){
+function resManagement(res, req){
 	db = createMySQLConnection();
 	db.connect(function(err) {
 	  if (err) {
@@ -920,8 +995,8 @@ function resManagement(res,userID){
 		console.log('Mysql Connected');
 	  }
 	});
-	var sql1 = "SELECT Product.ListingID, Product.Name, Product.CoverImageID, Price, OrderState FROM `cTeamTeamProjectDatabase`.`Order`, Product WHERE Product.ListingID = Order.ProductID AND PurchaserID =" + mysql.escape(userID) + ";";  //selects users orders
-	var sql2 = "SELECT Product.ListingID, Product.Name, Product.CoverImageID, Price, OrderState FROM `cTeamTeamProjectDatabase`.`Order`, Product WHERE Product.ListingID = Order.ProductID AND Order.SellerID =" + mysql.escape(userID) + ";"; //selects users sales
+	var sql1 = "SELECT Product.ListingID, Product.Name, Product.CoverImageID, Price, OrderState FROM `cTeamTeamProjectDatabase`.`Order`, Product WHERE Product.ListingID = Order.ProductID AND PurchaserID =" + mysql.escape(req.session.userID) + ";";  //selects users orders
+	var sql2 = "SELECT Product.ListingID, Product.Name, Product.CoverImageID, Price, OrderState FROM `cTeamTeamProjectDatabase`.`Order`, Product WHERE Product.ListingID = Order.ProductID AND Order.SellerID =" + mysql.escape(req.session.userID) + ";"; //selects users sales
 	var sql = sql1.toString() + sql2.toString();
 	console.log(sql);
 	db.query(sql, function(err, results, fields){
@@ -970,7 +1045,7 @@ function resManagement(res,userID){
 		});
 	});
 }
-function resListings(res,userID){
+function resListings(res,req){
 	db = createMySQLConnection();
 	db.connect(function(err) {
 	  if (err) {
@@ -980,7 +1055,7 @@ function resListings(res,userID){
 		//console.log('Mysql Connected');
 	  }
 	});
-	var sql = "SELECT Product.ListingID, Product.Name, Product.CoverImageID, Price, State FROM Product WHERE SellerID=" + mysql.escape(userID) + ";";  //selects users orders
+	var sql = "SELECT Product.ListingID, Product.Name, Product.CoverImageID, Price, State FROM Product WHERE SellerID=" + mysql.escape(req.session.use) + ";";  //selects users orders
 	//console.log(sql);
 	db.query(sql, function(err, results, fields){
 		for(var i = 0 ; i < results.length ; i++){
@@ -1086,6 +1161,47 @@ function getCurrentDate(){
 	console.log(result);
 	return result;
 }
+function findUser(username, callback){
+	db = createMySQLConnection();
+	db.connect(function(err) {
+	  if (err) {
+		console.log('Mysql Connection error:', err);
+	  }
+	  else{
+		//console.log('Mysql Connected');
+	  }
+	});
+	var sql = "SELECT UserID FROM Users WHERE username = " + mysql.escape(username) + " LIMIT 1";
+	db.query(sql, function(error, results, fields){
+		if(results.length > 0){
+			return callback(results[0].UserID);
+		}
+		else{
+			return callback();
+		}
+	});
+}
+function checkRegisterValues(res,a,b,c,d,e,f){
+	if(a==""|| null){
+		return false;
+	}
+	if(b==""|| null){
+		return false;
+	}	
+	if(c==""|| null){
+		return false;
+	}	
+	if(d==""|| null){
+		return false;		
+	}
+	if(e==""|| null){
+		return false;	
+	}
+	if(f==""|| null){
+		return false;	
+	}
+	return true;
+}
 module.exports = function(passport) {
  passport.serializeUser(function(user, done){
   done(null, user.id);
@@ -1165,6 +1281,18 @@ module.exports = function(passport) {
  );
 };
 
+
+
+/*
+function(req, res){
+   if(req.body.remember){
+    req.session.cookie.maxAge = 1000 * 60 * 3;
+   }else{
+    req.session.cookie.expires = false;
+   }
+   res.redirect('/');
+}
+*/
 /*
  db.query('SELECT * FROM cTeamTeamProjectDatabase.Users', function (err, result) {
     if (err){

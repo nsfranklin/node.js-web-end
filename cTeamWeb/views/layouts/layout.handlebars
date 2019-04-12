@@ -13,6 +13,7 @@
   <nav class="navbar navbar-default">
   <div class="container-fluid">
     <!-- Brand and toggle get grouped for better mobile display -->
+	{{#unless hide}}
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
         <span class="sr-only">Toggle navigation</span>
@@ -22,7 +23,8 @@
       </button>
       <a class="navbar-brand" href="/"> CTeam</a>
     </div>
-
+	{{/unless}}
+	{{#unless hide}}
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
@@ -36,6 +38,7 @@
 		<li><a href="/users/basket"><i class="fas fa-shopping-basket"></i> </a></li>
         </ul>
     </div><!-- /.navbar-collapse -->
+	{{/unless}}
   </div><!-- /.container-fluid -->
 </nav>
 
