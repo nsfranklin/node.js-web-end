@@ -526,7 +526,6 @@ router.post('/register', function(req, res){
 	  else{
 		console.log('Mysql Connected');
 	  }
-	  
 	});
 	app.use(express.urlencoded());
 	
@@ -537,6 +536,7 @@ router.post('/register', function(req, res){
 	var pass1 = req.body.password1;
 	var pass2 = req.body.password2
 	
+	
 	if(checkRegisterValues(firstName,surname,username,email,pass1,pass2)){
 		const regex = /\S+@\S+/
 		var usableEmail = false;
@@ -544,18 +544,62 @@ router.post('/register', function(req, res){
 		usableEmail = regex.test(String(email).toLowerCase())
 		console.log("Valid Email Result: " + usableEmail);
 		}
-		if(usableEmail){
-			
+		var sql1 = "SELECT UserID FROM Users WHERE UserName =" + mysql.escape(username) + ";";
+		var sql2 = " SELECT UserID FROM Users WHERE Email =" + mysql.escape(email) + ";";
+		var sql = sql1 + sql2;
+		if(pass1 === pass2){
+			console.log(sql);
+			db.query(sql, function(error, results, fields){
+				console.log(results);
+				if(results[0].length === 0 && results[1].length === 0){
+					if(usableEmail){
+						var createUserSQL = "INSERT INTO Users (UserName, SellerRating, FirstName, Surname, Email) Values(" + mysql.escape(username) + ",0," + mysql.escape(firstName) + "," + mysql.escape(surname) + "," + mysql.escape(email) + ");";
+						db.query(createUserSQL, function(err){
+							res.render('login', { error: "Account Created" });
+						});
+					}else{
+						res.render('register', {
+							error: "Email Not Valid",
+							firstname: firstName,
+							surname: surname,
+							username: username
+						});
+					}
+				}else{
+					if(results[0].length !== 0 && results[1].length !== 0){
+					res.render('register', {
+						error: "Username and email in use",
+						firstname: firstName,
+						surname: surname
+					});
+					}else if(results[0].length !== 0){
+					res.render('register', {
+						error: "Username in use",
+						firstname: firstName,
+						surname: surname,
+						email: email
+					});
+					}else{
+					res.render('register', {
+						error: "Email in use",
+						firstname: firstName,
+						surname: surname,
+						uername: username
+					});
+					}
+				}
+			});
 		}else{
-			
+			res.render('register', {
+				error: "Passwords not the same",
+				firstname: firstName,
+				surname: surname,
+				email: email,
+				username: username
+			});
 		}
-	}else{
-		
 	}
-	
-	
-	
-}));
+});
 router.post('/email', function(req, res){
 	db = createMySQLConnection();
 	db.connect(function(err) {
@@ -698,8 +742,6 @@ router.post('/delivery', function(req, res){
 		db.end();
 	})
 });
-router.post('/insertImage', function(req, res){
-});
 router.post('/removeItem', function(req,res){
 	db = createMySQLConnection();
 	db.connect(function(err) {
@@ -734,9 +776,9 @@ router.post('/checkout', function(req,res){
 	//var sql = "UPDATE Product SET State=" + mysql.escape("ordered") + " WHERE Product.ListingID = (SELECT Product.ListingID From Basket, Product, Image Where Basket.UserID =" + mysql.escape(userID) + " AND Basket.ProductID = Product.ListingID);" ;
 	var sqlDeleteStatement = "DELETE FROM Basket WHERE Basket.UserID =" + mysql.escape(req.session.userID);
 	db.query(sql, function(error, results, fields){
-	basketToOrders();
-	sqlNoReturnQuery(sqlDeleteStatement);
-	resManagement(res, req);
+		basketToOrders();
+		sqlNoReturnQuery(sqlDeleteStatement);
+		resManagement(res, req);
 	});
 });
 router.post('/newListing', function(req, res){
@@ -744,11 +786,9 @@ router.post('/newListing', function(req, res){
 	db.connect(function(err) {
 	  if (err) {
 		console.log('Mysql Connection error:', err);
-	  }
-	  else{
+	  }else{
 		console.log('Mysql Connected');
 	  }
-	  
 	});
 	app.use(express.urlencoded());
 	var productName = req.body.pname;
@@ -773,8 +813,10 @@ router.post('/newListing', function(req, res){
 		var DateCreated = new Date().toISOString().slice(0, 19).replace('T', ' ');;
 		var CoverImageID = getRndInteger(1,100);
 		var colourName = "tempColour";//findColour();
-		var SQL = "INSERT INTO Product(SellerID,Price,`Product`.`Name`,Description,DateCreated,Pending,`Product`.`Condition`,Colour,Brand,`Product`.`Type`,Size,Material,Sex,State,CameraID,CoverImageID) VALUES(" + req.session.userID + "," + price + ",\"" + productName + "\",\"" + productDescription + "\",\"" + DateCreated + "\"," + pending + ",\"" + condition + "\",\"" + colourName + "\",\"" + brand + "\",\"" + type + "\"," + size + ",\"" + material + "\",\"" + sex + "\",\"" + state + "\"," + CameraID + ",\"" + CoverImageID + "\")";
-		db.query(SQL, function(error, results, fields){console.log(error)});
+		var sql1 = "INSERT INTO Product(SellerID,Price,`Product`.`Name`,Description,DateCreated,Pending,`Product`.`Condition`,Colour,Brand,`Product`.`Type`,Size,Material,Sex,State,CameraID,CoverImageID) VALUES(" + req.session.userID + "," + price + ",\"" + productName + "\",\"" + productDescription + "\",\"" + DateCreated + "\"," + pending + ",\"" + condition + "\",\"" + colourName + "\",\"" + brand + "\",\"" + type + "\"," + size + ",\"" + material + "\",\"" + sex + "\",\"" + state + "\"," + CameraID + ",\"" + CoverImageID + "\");";
+		var sql2 = "";
+		var sql = sql1 + sql2;
+		db.query(sql, function(error, results, fields){console.log(error)});
 		res.render('uploads');	
 	}else{
 		resWithUploadDetails(res, productName,price,productDescription,condition,brand,type,size,colour,material,sex);
@@ -895,6 +937,27 @@ router.post('/viewSale', function(req, res){
 });
 router.post('/viewOrder', function(req, res){
 	res.render('viewOrder');
+});
+router.post('/cameraCalibration', function(req, res){
+	db = createMySQLConnection();
+	db.connect(function(err) {
+	  if (err) {
+		console.log('Mysql Connection error:', err);
+	  }else{
+		console.log('Mysql Connected');
+	  }
+	});
+	app.use(express.urlencoded());
+	var fileArray = req.body.file;
+	console.log(fileArray);
+	console.log(typeof fileArray);
+	if(!Array.isArray(fileArray) || fileArray.length < 8 || fileArray.length > 10){
+		res.render('settings', {error: "8 - 10 calibration images needed. see guide"});
+	}
+	for(var i; i < fileArray.length ; i++){
+		
+	}
+	
 });
 function basketToOrders(req){
 	db = createMySQLConnection();

@@ -25,6 +25,17 @@
 		<input type="text" id="settingsInput" name="focusLength" placeholder="---"  value='{{{focusLength1}}}'>
 		<input type="submit" value="Save Camera 1">
 	</form>
+	<br/>
+	<h3>Camera Calibration Images</h3>
+	<form action="/users/cameraCalibration" method="POST" enctype="multipart/form-data">
+		<label for="file">Click to Upload Images</label>
+		<input type="file" name="file" id="file" class="upload" accept="image/png,image/jpeg" multiple></input><br/>
+		<input type="submit" value="Save Calibration Images"></input>
+	</form>
+	{{#if error}}
+	<h3>{{error}}</h3>
+	{{/if}}
+	
 	
 	<!--
 	<form action="/users/cameraSetting" method="POST">

@@ -1,16 +1,10 @@
 
 <div class="box1">
 	<h3>Upload Photos For Listing</h3>
-	<form action="/users/insertImage" method="POST">
-		<label for="file">Click to Upload Images</label>
-		<input type="file" name="file" id="file" class="upload" onchange="readURL(this)" accept="image/png" multiple /><br/>
-		<input type="submit" name="" value="Upload">
-	<form> 
-</div>
-<div class="box1">
-	<h5> Product Description <h5>
-	<p> Add the relevant details to your products here </p>
 	<form action="/users/newListing" method="POST">
+		<label for="file">Click to Upload Images</label>
+		<input type="file" name="file" id="file" class="upload" accept="image/png" multiple /><br/>
+			<h3>Product Details</h3>
 		<label>Product Name</label></br>
 		<input type="text" id="pname" name="pname" value="{{{productName}}}">
 		<label>Price</label>
@@ -46,6 +40,6 @@
 			<option value="female">Female</option>
 			<option value="unisex">Unisex</option>
 		</select></br></br>
-		<input type="submit" name="Save" value="Save">
+		<input type="submit" name="Save" value="Save Details">
 	</form>
 </div>

@@ -19,10 +19,12 @@
     "express-messages": "*",
     "express-session": "*",
     "express-validator": "*",
+    "formidable": "^1.2.1",
     "fs": "*",
     "mysql": "*",
     "passport": "*",
     "passport-http": "*",
-    "passport-local": "^1.0.0"
+    "passport-local": "^1.0.0",
+    "request": "^2.88.0"
   }
 }
