@@ -9,6 +9,10 @@ var app = express();
 var userID = 37;
 var d = new Date();
 var session = require('express-session');
+var multer = require('multer');
+var storage = multer.memoryStorage();
+var upload = multer({storage: storage});
+var Promise = require('promise');
 //Connect to Mysql db
 var db;
 
@@ -308,7 +312,7 @@ function resWithSettingDetails(res, req){
 	var sql2 = " SELECT SensorSize, FocusLength FROM CameraDetails WHERE UserID=" + mysql.escape(req.session.userID) + " LIMIT 1;";
 	var sql3 = " SELECT FirstName, LastName, AddressNum, AddressLine, City, PostalCode, Country, AddressType FROM Address WHERE UserID=" + mysql.escape(req.session.userID) ;
 	var sql = sql1.toString() + sql2.toString() + sql3.toString();
-	console.log(sql);
+	//console.log(sql);
 	db.query(sql, function(err, results, fields){
 		var Users = results[0];
 		var CameraDetails = results[1];
@@ -340,9 +344,9 @@ function resWithSettingDetails(res, req){
 		var dccode = "";
 		var dcountry = "";
 		var show = false;
-		console.log(results);
-		console.log(CameraDetails[0]);
-		console.log(Address.length);
+		//console.log(results);
+		//console.log(CameraDetails[0]);
+		//console.log(Address.length);
 		var numberOfAddresses = Address.length;
 		if(numberOfAddresses >= 2){
 			if(Address[0].AddressType == 2){
@@ -601,363 +605,477 @@ router.post('/register', function(req, res){
 	}
 });
 router.post('/email', function(req, res){
-	db = createMySQLConnection();
-	db.connect(function(err) {
-	  if (err) {
-		console.log('Mysql Connection error:', err);
-	  }
-	  else{
-		console.log('Mysql Connected');
-	  }
-	});
-	app.use(express.urlencoded());
-	const regex = /\S+@\S+/
-	var usableEmail = false;
-	var email = req.body.email;
-	if(email !== undefined){
-		usableEmail = regex.test(String(email).toLowerCase())
-		console.log("Valid Email Result: " + usableEmail);
+	if(!isNaN(req.session.userID)){
+		db = createMySQLConnection();
+		db.connect(function(err) {
+		  if (err) {
+			console.log('Mysql Connection error:', err);
+		  }
+		  else{
+			console.log('Mysql Connected');
+		  }
+		});
+		app.use(express.urlencoded());
+		const regex = /\S+@\S+/
+		var usableEmail = false;
+		var email = req.body.email;
+		if(email !== undefined){
+			usableEmail = regex.test(String(email).toLowerCase())
+			console.log("Valid Email Result: " + usableEmail);
+		}
+		if(usableEmail){
+			var SQL = "UPDATE Users Set Email="+ mysql.escape(email) + " WHERE UserID =" + mysql.escape(req.session.userID);
+			db.query(SQL , function(error,results,fields){	
+				resWithSettingDetails(res);
+				db.end();
+			})
+		}else{
+			resWithSettingDetails(res);
+		}
+	}else{
+		res.render("login");
 	}
-	if(usableEmail){
-		var SQL = "UPDATE Users Set Email="+ mysql.escape(email) + " WHERE UserID =" + mysql.escape(req.session.userID);
-		db.query(SQL , function(error,results,fields){	
+});
+router.post('/password', function(req, res){
+	if(!isNaN(req.session.userID)){
+		db = createMySQLConnection();
+		db.connect(function(err) {
+		  if (err) {
+			console.log('Mysql Connection error:', err);
+		  }
+		  else{
+			console.log('Mysql Connected');
+		  }
+		  
+		});
+		app.use(express.urlencoded());
+		var selectSQL = "SELECT CameraID FROM CameraDetails WHERE UserID =" + mysql.escape(req.session.userID);
+		var cameraID;
+		db.query(selectSQL , function(error,results,fields){	
 			resWithSettingDetails(res);
 			db.end();
 		})
 	}else{
-		resWithSettingDetails(res);
+		res.render('login');
 	}
-});
-router.post('/password', function(req, res){
-	db = createMySQLConnection();
-	db.connect(function(err) {
-	  if (err) {
-		console.log('Mysql Connection error:', err);
-	  }
-	  else{
-		console.log('Mysql Connected');
-	  }
-	  
-	});
-	app.use(express.urlencoded());
-	var selectSQL = "SELECT CameraID FROM CameraDetails WHERE UserID =" + mysql.escape(req.session.userID);
-	var cameraID;
-	db.query(selectSQL , function(error,results,fields){	
-		resWithSettingDetails(res);
-		db.end();
-	})
 });
 router.post('/cameraSetting', function(req, res){
-	db = createMySQLConnection();
-	db.connect(function(err) {
-	  if (err) {
-		console.log('Mysql Connection error:', err);
-	  }
-	  else{
-		console.log('Mysql Connected');
-	  }
-	  
-	});
-	app.use(express.urlencoded());
-	var selectSQL = "SELECT CameraID FROM CameraDetails WHERE UserID =" + mysql.escape(req.session.userID);
-	var cameraID;
-	db.query(selectSQL , function(error,results,fields){	
-		if(typeof results[0] !== 'undefined'){
-			console.log(results[0] + " is defined!");
-			cameraID = results[0];
-			var sensorSize = parseFloat(req.body.sensorWidth)
-			console.log("Sensor Size Enter: " + sensorSize);
-			if(isNaN(sensorSize)){
-				sensorSize = null;
+	if(!isNaN(req.session.userID)){
+		db = createMySQLConnection();
+		db.connect(function(err) {
+		  if (err) {
+			console.log('Mysql Connection error:', err);
+		  }
+		  else{
+			console.log('Mysql Connected');
+		  }
+		  
+		});
+		app.use(express.urlencoded());
+		var selectSQL = "SELECT CameraID FROM CameraDetails WHERE UserID =" + mysql.escape(req.session.userID);
+		var cameraID;
+		db.query(selectSQL , function(error,results,fields){	
+			if(typeof results[0] !== 'undefined'){
+				console.log(results[0] + " is defined!");
+				cameraID = results[0];
+				var sensorSize = parseFloat(req.body.sensorWidth)
+				console.log("Sensor Size Enter: " + sensorSize);
+				if(isNaN(sensorSize)){
+					sensorSize = null;
+				}
+				console.log("SensorSize int?: " + sensorSize);
+				var focusLength = parseFloat(req.body.focusLength)
+				console.log("Focus Length Enter: " + focusLength);
+				if(isNaN(focusLength)){
+					focusLength = null;
+				}
+				console.log("FocusLength int?: " + focusLength);
+				var sql = "UPDATE CameraDetails SET SensorSize="+ mysql.escape(sensorSize) +" , FocusLength=" + mysql.escape(focusLength) + " WHERE UserID=" + mysql.escape(req.session.userID);
+				console.log(sql);
+				db.query(sql);
+			}else{
+				console.log(cameraID + " is undefined. WOW");
+				var sensorSize = parseFloat(req.body.sensorWidth)
+				console.log("Sensor Size Enter: " + sensorSize);
+				if(sensorSize === NaN){
+					sensorSize = null;
+				}
+				console.log("SensorSize int?: " + sensorSize);
+				var focusLength = parseFloat(req.body.focusLength)
+				console.log("Focus Length Enter: " + focusLength);
+				if(focusLength === NaN){
+					focusLength = null;
+				}
+				console.log("FocusLength int?: " + focusLength);
+				var sql = "INSERT INTO CameraDetails(SensorSize, FocusLength, UserID) VALUES(" + mysql.escape(sensorSize) + "," + mysql.escape(focusLength) + "," + mysql.escape(req.session.userID) + ")"; 
+				console.log(sql);
+				db.query(sql)
 			}
-			console.log("SensorSize int?: " + sensorSize);
-			var focusLength = parseFloat(req.body.focusLength)
-			console.log("Focus Length Enter: " + focusLength);
-			if(isNaN(focusLength)){
-				focusLength = null;
-			}
-			console.log("FocusLength int?: " + focusLength);
-			var sql = "UPDATE CameraDetails SET SensorSize="+ mysql.escape(sensorSize) +" , FocusLength=" + mysql.escape(focusLength) + " WHERE UserID=" + mysql.escape(req.session.userID);
-			console.log(sql);
-			db.query(sql);
-		}else{
-			console.log(cameraID + " is undefined. WOW");
-			var sensorSize = parseFloat(req.body.sensorWidth)
-			console.log("Sensor Size Enter: " + sensorSize);
-			if(sensorSize === NaN){
-				sensorSize = null;
-			}
-			console.log("SensorSize int?: " + sensorSize);
-			var focusLength = parseFloat(req.body.focusLength)
-			console.log("Focus Length Enter: " + focusLength);
-			if(focusLength === NaN){
-				focusLength = null;
-			}
-			console.log("FocusLength int?: " + focusLength);
-			var sql = "INSERT INTO CameraDetails(SensorSize, FocusLength, UserID) VALUES(" + mysql.escape(sensorSize) + "," + mysql.escape(focusLength) + "," + mysql.escape(req.session.userID) + ")"; 
-			console.log(sql);
-			db.query(sql)
-		}
-		resWithSettingDetails(res, req);
-		db.end();
-	})
+			resWithSettingDetails(res, req);
+			db.end();
+		});
+	}else{
+		res.render("login");
+	}
 });
 router.post('/billing', function(req, res){
-	db = createMySQLConnection();
-	db.connect(function(err) {
-	  if (err) {
-		console.log('Mysql Connection error:', err);
-	  }
-	  else{
-		console.log('Mysql Connected');
-	  }
-	  
-	});
-	app.use(express.urlencoded());
-	var selectSQL = "SELECT CameraID FROM CameraDetails WHERE UserID =" + mysql.escape(req.session.userID); 
-	var cameraID;
-	db.query(selectSQL , function(error,results,fields){	
+	if(!isNaN(req.session.userID)){
+		db = createMySQLConnection();
+		db.connect(function(err) {
+		  if (err) {
+			console.log('Mysql Connection error:', err);
+		  }
+		  else{
+			console.log('Mysql Connected');
+		  }
+		  
+		});
+		app.use(express.urlencoded());
+		var selectSQL = "SELECT CameraID FROM CameraDetails WHERE UserID =" + mysql.escape(req.session.userID); 
+		var cameraID;
+		db.query(selectSQL , function(error,results,fields){	
 
-		resWithSettingDetails(res);
-		db.end();
-	})
+			resWithSettingDetails(res);
+			db.end();
+		});
+	}else{
+	 res.render("login");	
+	}
 });
 router.post('/delivery', function(req, res){
-	db = createMySQLConnection();
-	db.connect(function(err) {
-	  if (err) {
-		console.log('Mysql Connection error:', err);
-	  }
-	  else{
-		console.log('Mysql Connected');
-	  }
-	  
-	});
-	app.use(express.urlencoded());
-	var selectSQL = "SELECT CameraID FROM CameraDetails WHERE UserID =" + mysql.escape(req.session.userID); 
-	var cameraID;
-	db.query(selectSQL , function(error,results,fields){	
-
-		resWithSettingDetails(res);
-		db.end();
-	})
+	if(!isNaN(req.session.userID)){
+		db = createMySQLConnection();
+		db.connect(function(err) {
+		  if (err) {
+			console.log('Mysql Connection error:', err);
+		  }
+		  else{
+			console.log('Mysql Connected');
+		  }
+		  
+		});
+		app.use(express.urlencoded());
+		var selectSQL = "SELECT CameraID FROM CameraDetails WHERE UserID =" + mysql.escape(req.session.userID); 
+		var cameraID;
+		db.query(selectSQL , function(error,results,fields){	
+			resWithSettingDetails(res);
+			db.end();
+		});
+	}else{
+		res.render('login');
+	}
 });
 router.post('/removeItem', function(req,res){
-	db = createMySQLConnection();
-	db.connect(function(err) {
-	  if (err) {
-		console.log('Mysql Connection error:', err);
-	  }
-	  else{
-		console.log('Mysql Connected');
-	  }
-	});
-	app.use(express.urlencoded());
-	var ProductID = req.body.ProductID;
-	var sql = "DELETE FROM Basket WHERE UserID=" + mysql.escape(req.session.userID) + " AND " + "ProductID=" + mysql.escape(ProductID);
-	console.log(sql);
-	db.query(sql, function(error, results, fields){
-	console.log(error);
-	resBasket(res, req);
-	});
+	if(!isNaN(req.session.userID)){
+		db = createMySQLConnection();
+		db.connect(function(err) {
+		  if (err) {
+			console.log('Mysql Connection error:', err);
+		  }
+		  else{
+			console.log('Mysql Connected');
+		  }
+		});
+		app.use(express.urlencoded());
+		var ProductID = req.body.ProductID;
+		var sql = "DELETE FROM Basket WHERE UserID=" + mysql.escape(req.session.userID) + " AND " + "ProductID=" + mysql.escape(ProductID);
+		console.log(sql);
+		db.query(sql, function(error, results, fields){
+		console.log(error);
+		resBasket(res, req);
+		});
+	}else{
+		res.render('login');
+	}
 });
 router.post('/checkout', function(req,res){
-	db = createMySQLConnection();
-	db.connect(function(err) {
-	  if (err) {
-		console.log('Mysql Connection error:', err);
-	  }
-	  else{
-		console.log('Mysql Connected');
-	  }
-	});
-	app.use(express.urlencoded());
-	var ProductID = req.body.ProductID;
-	//var sql = "UPDATE Product SET State=" + mysql.escape("ordered") + " WHERE Product.ListingID = (SELECT Product.ListingID From Basket, Product, Image Where Basket.UserID =" + mysql.escape(userID) + " AND Basket.ProductID = Product.ListingID);" ;
-	var sqlDeleteStatement = "DELETE FROM Basket WHERE Basket.UserID =" + mysql.escape(req.session.userID);
-	db.query(sql, function(error, results, fields){
-		basketToOrders();
-		sqlNoReturnQuery(sqlDeleteStatement);
-		resManagement(res, req);
-	});
-});
-router.post('/newListing', function(req, res){
-	db = createMySQLConnection();
-	db.connect(function(err) {
-	  if (err) {
-		console.log('Mysql Connection error:', err);
-	  }else{
-		console.log('Mysql Connected');
-	  }
-	});
-	app.use(express.urlencoded());
-	var productName = req.body.pname;
-	var price = req.body.price
-	var productDescription = req.body.pdescription
-	var condition = req.body.condition
-	var brand = req.body.brand
-	var type = req.body.type
-	var size = req.body.size
-	var colour = req.body.colour
-	var material = req.body.material
-	var sex = req.body.sex
-	var allNonNull = checkforEmpty(res,productName,price,productDescription,condition,brand,type,size,colour,material,sex); 
-	
-	console.log(allNonNull);
-	
-	if(allNonNull){
-		console.log("All Null");
-		var pending = "0";
-		var state = "pending";
-		var CameraID = 1;
-		var DateCreated = new Date().toISOString().slice(0, 19).replace('T', ' ');;
-		var CoverImageID = getRndInteger(1,100);
-		var colourName = "tempColour";//findColour();
-		var sql1 = "INSERT INTO Product(SellerID,Price,`Product`.`Name`,Description,DateCreated,Pending,`Product`.`Condition`,Colour,Brand,`Product`.`Type`,Size,Material,Sex,State,CameraID,CoverImageID) VALUES(" + req.session.userID + "," + price + ",\"" + productName + "\",\"" + productDescription + "\",\"" + DateCreated + "\"," + pending + ",\"" + condition + "\",\"" + colourName + "\",\"" + brand + "\",\"" + type + "\"," + size + ",\"" + material + "\",\"" + sex + "\",\"" + state + "\"," + CameraID + ",\"" + CoverImageID + "\");";
-		var sql2 = "";
-		var sql = sql1 + sql2;
-		db.query(sql, function(error, results, fields){console.log(error)});
-		res.render('uploads');	
+	if(!isNaN(req.session.userID)){
+		db = createMySQLConnection();
+		db.connect(function(err) {
+		  if (err) {
+			console.log('Mysql Connection error:', err);
+		  }
+		  else{
+			console.log('Mysql Connected');
+		  }
+		});
+		app.use(express.urlencoded());
+		var ProductID = req.body.ProductID;
+		//var sql = "UPDATE Product SET State=" + mysql.escape("ordered") + " WHERE Product.ListingID = (SELECT Product.ListingID From Basket, Product, Image Where Basket.UserID =" + mysql.escape(userID) + " AND Basket.ProductID = Product.ListingID);" ;
+		var sqlDeleteStatement = "DELETE FROM Basket WHERE Basket.UserID =" + mysql.escape(req.session.userID);
+		db.query(sql, function(error, results, fields){
+			basketToOrders();
+			sqlNoReturnQuery(sqlDeleteStatement);
+			resManagement(res, req);
+		});
 	}else{
-		resWithUploadDetails(res, productName,price,productDescription,condition,brand,type,size,colour,material,sex);
+		res.render('login');
 	}
-	
-	/*
-	console.log(productName);
-	console.log(price);
-	console.log(productDescription);
-	console.log(condition);
-	console.log(brand);
-	console.log(type);
-	console.log(size);
-	console.log(colour);
-	console.log(material);
-	console.log(sex);
-	*/
-	//var selectSQL = "INSERT 
+});
+router.post('/newListing', upload.array('camera'), function(req, res){
+	if(!isNaN(req.session.userID)){
+		db = createMySQLConnection();
+		db.connect(function(err) {
+		  if (err) {
+			console.log('Mysql Connection error:', err);
+		  }else{
+			console.log('Mysql Connected');
+		  }
+		});
+		app.use(express.urlencoded());
+		var imgBufferArray = req.files;
+		var productName = req.body.pname;
+		var price = req.body.price
+		var productDescription = req.body.pdescription
+		var condition = req.body.condition
+		var brand = req.body.brand
+		var type = req.body.type
+		var size = req.body.size
+		var colour = req.body.colour
+		var material = req.body.material
+		var sex = req.body.sex
+		var allNonNull = checkforEmpty(res,productName,price,productDescription,condition,brand,type,size,colour,material,sex); 
+		
+		console.log(imgBufferArray + " " + imgBufferArray.length);
+		
+		if(allNonNull){
+			if(req.files.length < 25 || req.files.length > 40){
+				var error = "25 - 40 Images Required";
+				console.log("more image, enough form");
+				resWithUploadDetails(res, productName,price,productDescription,condition,brand,type,size,colour,material,sex, error);
+			}else{
+				var pending = "0";
+				var state = "pending";
+				var CameraID = 1;
+				var DateCreated = new Date().toISOString().slice(0, 19).replace('T', ' ');;
+				var CoverImageID = getRndInteger(1,100);
+				var colourName = "tempColour";//findColour();
+				var sql = "INSERT INTO Product(SellerID,Price,`Product`.`Name`,Description,DateCreated,Pending,`Product`.`Condition`,Colour,Brand,`Product`.`Type`,Size,Material,Sex,State,CameraID,CoverImageID) VALUES(" + req.session.userID + "," + price + ",\"" + productName + "\",\"" + productDescription + "\",\"" + DateCreated + "\"," + pending + ",\"" + condition + "\",\"" + colourName + "\",\"" + brand + "\",\"" + type + "\"," + size + ",\"" + material + "\",\"" + sex + "\",\"" + state + "\"," + CameraID + ",\"" + CoverImageID + "\");";
+				db.query(sql, function(error, results, fields){
+					//console.log(results + " " + imgBufferArray.length);
+					var insertedID = results.insertId;
+					var sql2 = "";
+					for(var i = 0 ; i < imgBufferArray.length ; i++){
+						//console.log(imgBufferArray[i].buffer);
+						sql2 = "INSERT INTO Image(ImageBlob, ListingID) Values(" + mysql.escape(imgBufferArray[i].buffer) + "," +  insertedID + ")";
+						//console.log("Starting: " + i);
+						db.query(sql2, function(error){
+							console.log("Finished Uploading Another Image");
+						});
+					}
+				});
+				res.render('uploads');
+			}		
+		}else{
+			if(req.files.length < 25 || req.files.length > 40){
+				var error = "Fill In Full Form. Also 25 - 40 Images Required";
+				console.log("more image, more form");
+				resWithUploadDetails(res, productName,price,productDescription,condition,brand,type,size,colour,material,sex, error);
+			}else{
+				var error = "Fill In Full Form";
+				console.log("enough image, more form");
+				resWithUploadDetails(res, productName,price,productDescription,condition,brand,type,size,colour,material,sex, error);
+			}
+		}
+	}else{
+		res.render('login');
+	}
 });
 router.post('/updateListing', function(req,res){
-	app.use(express.urlencoded());
-	var listingID = req.body.ProductID;
-	db = createMySQLConnection();
-	db.connect(function(err) {
-	  if (err) {
-		console.log('Mysql Connection error:', err);
-	  }
-	  else{
-		console.log('Mysql Connected');
-	  }
-	});
-	//var sql = "DELETE FROM Product WHERE ListingID =" + mysql.escape(listingID);
-	//console.log(sql);
-	//db.query(sql, function(error, results, fields){
-	//	console.log(error);
-	//	resListings(res, userID);
-	//})
-	console.log("Delecting Items Currently Disabled");
-	resListings(res, req);
+	if(!isNaN(req.session.userID)){
+		app.use(express.urlencoded());
+		var listingID = req.body.ProductID;
+		db = createMySQLConnection();
+		db.connect(function(err) {
+		  if (err) {
+			console.log('Mysql Connection error:', err);
+		  }
+		  else{
+			console.log('Mysql Connected');
+		  }
+		});
+		var sql = "DELETE FROM Product WHERE ListingID =" + mysql.escape(listingID);
+		console.log(sql);
+		db.query(sql, function(error, results, fields){
+			console.log(error);
+			resListings(res, userID);
+		})
+		//console.log("Delecting Items Currently Disabled");
+		//resListings(res, req);
+	}else{
+		res.render('login');
+	}
 });
 router.post('/orderStatusUpdate', function(req,res){
-	app.use(express.urlencoded());
-	var listingID = req.body.ProductID;
-	db = createMySQLConnection();
-	db.connect(function(err) {
-	  if (err) {
-		console.log('Mysql Connection error:', err);
-	  }
-	  else{
-		console.log('Mysql Connected');
-	  }
-	});
-	var listingID = req.body.ProductID;
-	var Status = req.body.Status;
-	var sql = "-1";
-	
-	if(Status = "paid"){
-		sql = "UPDATE cTeamTeamProjectDatabase.Order Set isOpen = 1 , OrderState =" + mysql.escape("dispatched") + " WHERE ProductID =" + mysql.escape(listingID);
-	}else if(Status = "dispatched"){
-		sql = "UPDATE cTeamTeamProjectDatabase.Order Set isOpen = 1 , OrderState =" + mysql.escape("arrived") + " WHERE ProductID =" + mysql.escape(listingID);
-	}else if(Status = "arrived"){
-		sql = "UPDATE cTeamTeamProjectDatabase.Order Set isOpen = 0 , OrderState =" + mysql.escape("closed") + " WHERE ProductID =" + mysql.escape(listingID);
-	}
-	
-	if(sql == "-1"){
-		resManagement(res, req);
-	}else{
-		console.log("updated");
-		db.query(sql, function(error, results, fields){
-			console.log(sql);
-			console.log(error);
-			resManagement(res, req);
+	if(!isNaN(req.session.userID)){
+		app.use(express.urlencoded());
+		var listingID = req.body.ProductID;
+		db = createMySQLConnection();
+		db.connect(function(err) {
+		  if (err) {
+			console.log('Mysql Connection error:', err);
+		  }
+		  else{
+			console.log('Mysql Connected');
+		  }
 		});
+		var listingID = req.body.ProductID;
+		var Status = req.body.Status;
+		var sql = "-1";
+		
+		if(Status = "paid"){
+			sql = "UPDATE cTeamTeamProjectDatabase.Order Set isOpen = 1 , OrderState =" + mysql.escape("dispatched") + " WHERE ProductID =" + mysql.escape(listingID);
+		}else if(Status = "dispatched"){
+			sql = "UPDATE cTeamTeamProjectDatabase.Order Set isOpen = 1 , OrderState =" + mysql.escape("arrived") + " WHERE ProductID =" + mysql.escape(listingID);
+		}else if(Status = "arrived"){
+			sql = "UPDATE cTeamTeamProjectDatabase.Order Set isOpen = 0 , OrderState =" + mysql.escape("closed") + " WHERE ProductID =" + mysql.escape(listingID);
+		}
+		
+		if(sql == "-1"){
+			resManagement(res, req);
+		}else{
+			console.log("updated");
+			db.query(sql, function(error, results, fields){
+				console.log(sql);
+				console.log(error);
+				resManagement(res, req);
+			});
+		}
+	}else{
+		res.render('login');
 	}
-	console.log("Updated Order");
 });
 router.post('/salesStatusUpdate', function(req,res){
-	app.use(express.urlencoded());
-	var listingID = req.body.ProductID;
-	db = createMySQLConnection();
-	db.connect(function(err) {
-	  if (err) {
-		console.log('Mysql Connection error:', err);
-	  }
-	  else{
-		console.log('Mysql Connected');
-	  }
-	});
-	var listingID = req.body.ProductID;
-	var Status = req.body.Status;
-	var sql = "-1";
-	
-	if(Status = "paid"){
-		sql = "UPDATE cTeamTeamProjectDatabase.Order Set isOpen = 1 , OrderState =" + mysql.escape("dispatched") + " WHERE ProductID =" + mysql.escape(listingID);
-	}else if(Status = "dispatched"){
-		sql = "UPDATE cTeamTeamProjectDatabase.Order Set isOpen = 1 , OrderState =" + mysql.escape("arrived") + " WHERE ProductID =" + mysql.escape(listingID);
-	}else if(Status = "arrived"){
-		sql = "UPDATE cTeamTeamProjectDatabase.Order Set isOpen = 0 , OrderState =" + mysql.escape("closed") + " WHERE ProductID =" + mysql.escape(listingID);
-	}
-	
-	if(sql == "-1"){
-		resManagement(res, req);
-	}else{
-		console.log("updated");
-		db.query(sql, function(error, results, fields){
-			console.log(sql);
-			console.log(error);
-			resManagement(res, req);
+	if(!isNaN(req.session.userID)){
+		app.use(express.urlencoded());
+		var listingID = req.body.ProductID;
+		db = createMySQLConnection();
+		db.connect(function(err) {
+		  if (err) {
+			console.log('Mysql Connection error:', err);
+		  }
+		  else{
+			console.log('Mysql Connected');
+		  }
 		});
+		var listingID = req.body.ProductID;
+		var Status = req.body.Status;
+		var sql = "-1";
+		
+		if(Status = "paid"){
+			sql = "UPDATE cTeamTeamProjectDatabase.Order Set isOpen = 1 , OrderState =" + mysql.escape("dispatched") + " WHERE ProductID =" + mysql.escape(listingID);
+		}else if(Status = "dispatched"){
+			sql = "UPDATE cTeamTeamProjectDatabase.Order Set isOpen = 1 , OrderState =" + mysql.escape("arrived") + " WHERE ProductID =" + mysql.escape(listingID);
+		}else if(Status = "arrived"){
+			sql = "UPDATE cTeamTeamProjectDatabase.Order Set isOpen = 0 , OrderState =" + mysql.escape("closed") + " WHERE ProductID =" + mysql.escape(listingID);
+		}
+		
+		if(sql == "-1"){
+			resManagement(res, req);
+		}else{
+			console.log("updated");
+			db.query(sql, function(error, results, fields){
+				console.log(sql);
+				console.log(error);
+				resManagement(res, req);
+			});
+		}
+	}else{
+		res.render('login');
 	}
-	console.log("Updated Listing");
 });
 router.post('/openDetails', function(req, res){
-	res.render('viewListing');
+	if(!isNaN(req.session.userID)){
+		res.render('viewListing');
+	}else{
+		res.render("login");
+	}
 });
 router.post('/viewSale', function(req, res){
-	res.render('viewSale');
+	if(!isNaN(req.session.userID)){
+		res.render('viewSale');
+	}else{
+		res.render('login');
+	}
 });
 router.post('/viewOrder', function(req, res){
-	res.render('viewOrder');
+	if(!isNaN(req.session.userID)){
+		res.render('viewOrder');
+	}else{
+		res.render('login');
+	}
 });
-router.post('/cameraCalibration', function(req, res){
-	db = createMySQLConnection();
-	db.connect(function(err) {
-	  if (err) {
-		console.log('Mysql Connection error:', err);
-	  }else{
-		console.log('Mysql Connected');
-	  }
-	});
-	app.use(express.urlencoded());
-	var fileArray = req.body.file;
-	console.log(fileArray);
-	console.log(typeof fileArray);
-	if(!Array.isArray(fileArray) || fileArray.length < 8 || fileArray.length > 10){
-		res.render('settings', {error: "8 - 10 calibration images needed. see guide"});
+router.post('/cameraCalibration', upload.array('camera'), function(req, res){
+	if(!isNaN(req.session.userID)){
+		db = createMySQLConnection();
+		db.connect(function(err) {
+		  if(err) {
+			console.log('Mysql Connection error:', err);
+		  }else{
+			console.log('Mysql Connected');
+		  }
+		});
+		if(req.files.length < 8 || req.files.length > 10){
+			res.render('settings', {error: "8 - 10 calibration images needed. see guide"});
+		}else{
+			var sql = "SELECT CameraID FROM CameraDetails WHERE UserID =" + mysql.escape(req.session.userID);
+			db.query(sql, function(error, results, fields){
+				console.log(results);
+				if(results.length > 0){
+					var sql2 = "SELECT ImageID FROM CaliImage WHERE CameraID=" + mysql.escape(results[0].CameraID);
+					console.log(sql2);
+					db.query(sql2, function(error2, results2, fields2){
+						console.log(results2);
+						console.log(results2.length);
+						if(results2.length > 0){ //images exist
+							console.log("HERE");
+							var sql3 = "DELETE FROM CaliImage WHERE CameraID=" + mysql.escape(results[0].CameraID);
+							console.log(sql3);
+							db.query(sql3, function(error3, results3, fields3){
+								var sql4 = "";
+								for(var i = 0 ; i < req.files.length ; i++){
+									sql4 = "INSERT INTO CaliImage (CameraID,ImageBlob) VALUES(" + mysql.escape(results[0].CameraID) + " , " + mysql.escape(req.files[i].buffer) + ");";
+									//console.log(sql4);
+									db.query(sql4, function(error4, results4, fields4){
+										//console.log(error4);
+									});
+								}
+								res.render("settings");
+							});
+						}else{  //image don't exist for camera
+							console.log("THERE");
+							var sql3 = "";
+							for(var i = 0 ; i < req.files.length ; i++){
+								sql3 = "INSERT INTO CaliImage (CameraID,ImageBlob) VALUES(" + mysql.escape(results[0].CameraID) + " , " + mysql.escape(req.files[i].buffer) + ");"; //
+								//console.log(sql3);
+								db.query(sql3, function(error3, results3, fields3){
+									//console.log(error3); //INSERT IMAGES
+								});
+							}
+							res.render("settings");
+						}
+					});
+				}else{//create new camera for the user
+					var sql2 = "INSERT INTO CameraDetails (UserID) Values (" + mysql.escape(req.session.userID) + ");";
+					console.log(sql2);
+					db.query(sql2 , function(error2, results2){
+						console.log(error2);
+						var sql3 = "";
+						var insertedID = results2.insertId;
+						for(var i = 0 ; i < req.files.length ; i++){
+							sql3 = "INSERT INTO CaliImage (CameraID,ImageBlob) VALUES(" + mysql.escape(insertedID) + " , " + mysql.escape(req.files[i].buffer) + ");";
+							db.query(sql3 , function(error3){
+								//console.log("Error Result: " + error3);
+							});
+						}
+						res.render("settings");
+					});
+				}
+			});
+		}
+	}else{
+		res.render("login");
 	}
-	for(var i; i < fileArray.length ; i++){
-		
-	}
-	
 });
 function basketToOrders(req){
 	db = createMySQLConnection();
@@ -994,7 +1112,7 @@ function sqlNoReturnQuery(sql){
 		console.log(error);
 	});
 }
-function resWithUploadDetails(res,productName,price,productDescription,condition,brand,type,size,colour,material,sex){
+function resWithUploadDetails(res,productName,price,productDescription,condition,brand,type,size,colour,material,sex, error){
 	res.render('uploads', {
 	productName: productName
 	,price: price
@@ -1006,6 +1124,7 @@ function resWithUploadDetails(res,productName,price,productDescription,condition
 	,colour: colour
 	,material: material
 	,sex: sex
+	,error: error
 	});
 }
 function resBasket(res, req){
@@ -1173,34 +1292,34 @@ async function imageEncode(CoverImageID){
 	var a = await encodeImageFromDatabase(CoverImageID)
 }
 function checkforEmpty(res,a,b,c,d,e,f,g,h,i,j){
-	if(a==""|| null){
+	if(a==""|| a==null){
 		return false;
 	}
-	if(b==""|| null){
+	if(b==""|| b==null || isNaN(b)){
 		return false;
 	}	
-	if(c==""|| null){
+	if(c==""|| c==null){
 		return false;
 	}	
-	if(d==""|| null){
+	if(d==""|| d==null || d=="default" ){
 		return false;		
 	}
-	if(e==""|| null){
+	if(e==""|| e==null){
 		return false;	
 	}
-	if(f==""|| null){
+	if(f==""|| f==null || f=="default" ){
 		return false;	
 	}
-	if(g==""|| null){
+	if(g==""|| g==null || isNaN(g)){
 		return false;	
 	}
-	if(h==""|| null){
+	if(h==""|| h==null){
 		return false;
 	}
-	if(i==""|| null){
+	if(i==""|| i==null){
 		return false;
 	}
-	if(j==""|| null){
+	if(j==""|| j==null || j=="default" ){
 		return false;
 	}
 	return true;

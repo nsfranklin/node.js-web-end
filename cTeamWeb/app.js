@@ -85,7 +85,3 @@ app.set('port', (process.env.PORT || 3307));
 app.listen(app.get('port'), function(){
 	console.log('Server started on port '+app.get('port')); 
 });
-
-app.post('/cameraSetting', function(req, res){
-	res.send('<h1>Hello World<h1>')
-});

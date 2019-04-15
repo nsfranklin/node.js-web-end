@@ -1,9 +1,9 @@
 
 <div class="box1">
 	<h3>Upload Photos For Listing</h3>
-	<form action="/users/newListing" method="POST">
-		<label for="file">Click to Upload Images</label>
-		<input type="file" name="file" id="file" class="upload" accept="image/png" multiple /><br/>
+	<form action="/users/newListing" method="POST" enctype="multipart/form-data">
+		<input type="file" name="camera" id="camera" class="upload" accept="image/png" multiple></input>
+		<label for="camera">Click to Upload Images</label>
 			<h3>Product Details</h3>
 		<label>Product Name</label></br>
 		<input type="text" id="pname" name="pname" value="{{{productName}}}">
@@ -42,4 +42,7 @@
 		</select></br></br>
 		<input type="submit" name="Save" value="Save Details">
 	</form>
+	{{#if error}}
+	<h3>{{error}}</h3>
+	{{/if}}
 </div>

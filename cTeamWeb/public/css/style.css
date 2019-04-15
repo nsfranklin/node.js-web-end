@@ -303,6 +303,10 @@ input[type=text]:focus{
   padding: 15px;
 }
 
+.box1 input[type="file"]{
+	display: none;
+}
+
 .box4{
 	width: 80%;
 	min-width: 800px;
