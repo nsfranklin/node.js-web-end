@@ -30,6 +30,7 @@
 					<input type="submit" value="View Order Details"></input>
 				</form>
 			</td>
+			{{#unless this.notOpen}}
 			<td>
 				<form action="/users/orderStatusUpdate" method="POST">
 					<input name="Status" type="hidden" value="{{this.OrderState}}"></input>
@@ -37,6 +38,7 @@
 					<input type="submit" {{{this.ButtonValue}}}></input>
 				</form>
 			</td>
+			{{/unless}}
 		  </tr>	
 		{{else}}
 			<h3>No Orders</h3>
@@ -79,6 +81,7 @@
 					<input type="submit" value="View Sales Details"></input>
 				</form>
 			</td>
+			{{#unless this.notOpen}}
 			<td>
 				<form action="/users/salesStatusUpdate" method="POST">
 					<input name="Status" type="hidden" value="{{this.OrderState}}"></input>
@@ -86,6 +89,7 @@
 					<input type="submit" {{{this.ButtonValue}}}></input>
 				</form>
 			</td>
+			{{/unless}}
 		  </tr>	
 		{{else}}
 			<h3>No Sales</h3>

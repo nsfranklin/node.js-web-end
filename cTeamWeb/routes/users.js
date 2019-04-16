@@ -13,9 +13,10 @@ var multer = require('multer');
 var storage = multer.memoryStorage();
 var upload = multer({storage: storage});
 var Promise = require('promise');
+var promiseMysql = require('promise-mysql');
 //Connect to Mysql db
 var db;
-
+var dbp; //a promised db connection.)
 
 // Express Session
 app.use(session({
@@ -35,6 +36,7 @@ function createMySQLConnection(){
 	  });
 	  return db;
 }
+
 
 //Settings
 router.get('/settings', function(req, res){ 
@@ -450,6 +452,7 @@ function resWithSettingDetails(res, req){
 			,dcountry: dcountry
 		});
 	})
+	db.end();
 }	
 //Basket
 router.get('/basket', function(req, res){ 
@@ -513,7 +516,7 @@ router.post('/login', function(req, res){
 	findUser(username, function(result){
 			if(result){
 				req.session.userID = result;
-				resListings(res, req);
+				resBasket(res, req);
 			}else{
 				res.render('login', {
 					error: 'Unknown Username or Password'
@@ -603,6 +606,7 @@ router.post('/register', function(req, res){
 			});
 		}
 	}
+	db.end();
 });
 router.post('/email', function(req, res){
 	if(!isNaN(req.session.userID)){
@@ -627,8 +631,8 @@ router.post('/email', function(req, res){
 			var SQL = "UPDATE Users Set Email="+ mysql.escape(email) + " WHERE UserID =" + mysql.escape(req.session.userID);
 			db.query(SQL , function(error,results,fields){	
 				resWithSettingDetails(res);
-				db.end();
 			})
+			db.end();
 		}else{
 			resWithSettingDetails(res);
 		}
@@ -790,24 +794,40 @@ router.post('/removeItem', function(req,res){
 });
 router.post('/checkout', function(req,res){
 	if(!isNaN(req.session.userID)){
-		db = createMySQLConnection();
-		db.connect(function(err) {
-		  if (err) {
-			console.log('Mysql Connection error:', err);
-		  }
-		  else{
-			console.log('Mysql Connected');
-		  }
-		});
 		app.use(express.urlencoded());
 		var ProductID = req.body.ProductID;
 		//var sql = "UPDATE Product SET State=" + mysql.escape("ordered") + " WHERE Product.ListingID = (SELECT Product.ListingID From Basket, Product, Image Where Basket.UserID =" + mysql.escape(userID) + " AND Basket.ProductID = Product.ListingID);" ;
-		var sqlDeleteStatement = "DELETE FROM Basket WHERE Basket.UserID =" + mysql.escape(req.session.userID);
-		db.query(sql, function(error, results, fields){
-			basketToOrders();
-			sqlNoReturnQuery(sqlDeleteStatement);
+		//var sqlDeleteStatement = "DELETE FROM Basket WHERE Basket.UserID =" + mysql.escape(req.session.userID);
+		var connection;
+		
+		promiseMysql.createConnection({
+			host     : 'cteamteamprojectdatabase.csed5aholavi.eu-west-2.rds.amazonaws.com',
+			user     : 'nodeserver',
+			password : '54Tjltl9LgSWHxrx2AVo',
+			database : 'cTeamTeamProjectDatabase',
+			ssl  : 'Amazon RDS',
+			multipleStatements: true
+		}).then(function(conn){
+			connection = conn;
+			return connection.query("SELECT ListingID, SellerID FROM Basket, Product Where Basket.UserID=" + mysql.escape(req.session.userID) + " AND Basket.ProductID = Product.ListingID");
+		}).then(function(results){
+			console.log(results);				
+			console.log(results.length + "1");
+			var sql = "INSERT INTO `cTeamTeamProjectDatabase`.`Order`(PurchaserID, SellerID, ProductID, OrderState, isOpen) VALUES";
+			for(var i = 0 ; i < results.length ; i++){
+				if(i > 0 && i < results.length){
+					sql = sql + ",";
+				}
+				sql = sql + "(" + promiseMysql.escape(req.session.userID) + "," + promiseMysql.escape(results[i].SellerID) + "," + promiseMysql.escape(results[i].ListingID) + "," + promiseMysql.escape("paid") + "," + promiseMysql.escape(1) + ")"
+			}
+			console.log(sql);
+			sql = sql + ";";
+			return connection.query(sql);
+		}).then(function(results2){
 			resManagement(res, req);
-		});
+		}).then(function(){
+			return connection.query("DELETE FROM Basket WHERE UserID =" + promiseMysql.escape(req.session.userID));
+		})
 	}else{
 		res.render('login');
 	}
@@ -921,14 +941,18 @@ router.post('/orderStatusUpdate', function(req,res){
 		});
 		var listingID = req.body.ProductID;
 		var Status = req.body.Status;
+
 		var sql = "-1";
 		
-		if(Status = "paid"){
+		if(Status == "paid"){
 			sql = "UPDATE cTeamTeamProjectDatabase.Order Set isOpen = 1 , OrderState =" + mysql.escape("dispatched") + " WHERE ProductID =" + mysql.escape(listingID);
-		}else if(Status = "dispatched"){
+				console.log("paid update");
+		}else if(Status == "dispatched"){
 			sql = "UPDATE cTeamTeamProjectDatabase.Order Set isOpen = 1 , OrderState =" + mysql.escape("arrived") + " WHERE ProductID =" + mysql.escape(listingID);
-		}else if(Status = "arrived"){
+				console.log("dispatch update");
+		}else if(Status == "arrived"){
 			sql = "UPDATE cTeamTeamProjectDatabase.Order Set isOpen = 0 , OrderState =" + mysql.escape("closed") + " WHERE ProductID =" + mysql.escape(listingID);
+				console.log("arrived update");
 		}
 		
 		if(sql == "-1"){
@@ -936,10 +960,11 @@ router.post('/orderStatusUpdate', function(req,res){
 		}else{
 			console.log("updated");
 			db.query(sql, function(error, results, fields){
-				console.log(sql);
+				//console.log(sql);
 				console.log(error);
 				resManagement(res, req);
 			});
+			db.end();
 		}
 	}else{
 		res.render('login');
@@ -1077,27 +1102,7 @@ router.post('/cameraCalibration', upload.array('camera'), function(req, res){
 		res.render("login");
 	}
 });
-function basketToOrders(req){
-	db = createMySQLConnection();
-	db.connect(function(err) {
-	  if (err) {
-		console.log('Mysql Connection error:', err);
-	  }
-	  else{
-		console.log('Mysql Connected');
-	  }
-	});
-	var sql = "SELECT COUNT(UserID) FROM Basket WHERE Basket.UserID=" + mysql.escape(req.session.userID);
-	console.log(sql);
-	db.query(sql, function(error, results, fields){
-		console.log(error);
-		console.log(results);
-		//var sql = "INSERT INTO Order(PurchaserID, SellerID, ProductID, OrderState, isOpen) Values(" mysql.escape(userID) +","+ mysql.escape() +","+ mysql.escape() +","+ mysql.escape() +","+ mysql.escape(1) + ");"
-		for(var i = 0 ; i < results[0].COUNT(UserID); i++){
-			sqlNoReturnQuery();
-		}
-	});
-}
+
 function sqlNoReturnQuery(sql){
 	db = createMySQLConnection();
 	db.connect(function(err) {
@@ -1180,7 +1185,7 @@ function resManagement(res, req){
 	var sql1 = "SELECT Product.ListingID, Product.Name, Product.CoverImageID, Price, OrderState FROM `cTeamTeamProjectDatabase`.`Order`, Product WHERE Product.ListingID = Order.ProductID AND PurchaserID =" + mysql.escape(req.session.userID) + ";";  //selects users orders
 	var sql2 = "SELECT Product.ListingID, Product.Name, Product.CoverImageID, Price, OrderState FROM `cTeamTeamProjectDatabase`.`Order`, Product WHERE Product.ListingID = Order.ProductID AND Order.SellerID =" + mysql.escape(req.session.userID) + ";"; //selects users sales
 	var sql = sql1.toString() + sql2.toString();
-	console.log(sql);
+	//console.log(sql);
 	db.query(sql, function(err, results, fields){
 		for(var i = 0 ; i < results[0].length ; i++){
 			if(!fs.existsSync('public/Image/' + results[0][i].CoverImageID + ".png")){
@@ -1198,6 +1203,9 @@ function resManagement(res, req){
 			}
 			if(results[0][i].OrderState == "dispatched"){
 				results[0][i].ButtonValue = "value=\"Mark as Arrived\"";
+			}
+			if(results[0][i].OrderState == "closed"){
+				results[0][i].notOpen = true;
 			}
 			
 		}
@@ -1217,6 +1225,9 @@ function resManagement(res, req){
 			}
 			if(results[1][j].OrderState == "dispatched"){
 				results[1][j].ButtonValue = "value=\"Waiting On Buy Response\" disabled";
+			}
+			if(results[1][j].OrderState == "closed"){
+				results[1][j].notOpen = true;
 			}
 		}
 		console.log(err);
