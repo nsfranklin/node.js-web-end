@@ -1248,8 +1248,8 @@ function resListings(res,req){
 		//console.log('Mysql Connected');
 	  }
 	});
-	var sql = "SELECT Product.ListingID, Product.Name, Product.CoverImageID, Price, State FROM Product WHERE SellerID=" + mysql.escape(req.session.use) + ";";  //selects users orders
-	//console.log(sql);
+	var sql = "SELECT Product.ListingID, Product.Name, Product.CoverImageID, Price, State FROM Product WHERE SellerID=" + mysql.escape(req.session.userID) + ";";  //selects users orders
+	console.log(sql);
 	db.query(sql, function(err, results, fields){
 		for(var i = 0 ; i < results.length ; i++){
 			if(results[i].State == "available" || results[i].State == "failed" || results[i].State == "pending"){
